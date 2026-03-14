@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GD Demon List</title>
     <!-- Load Supabase Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net"></script>
     <style>
         body { 
             background-color: #121212; 
@@ -16,108 +16,48 @@
             align-items: center;
             padding: 50px;
         }
-
         h1 { margin-bottom: 40px; letter-spacing: 3px; }
-
-        /* The List Container */
-        #list-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
+        #list-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
         .level-card {
-            background: #1e1e1e;
-            border: 2px solid #333;
-            border-radius: 15px;
-            width: 600px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
+            background: #1e1e1e; border: 2px solid #333; border-radius: 15px;
+            width: 600px; padding: 20px; display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 20px;
         }
-
         .info { text-align: left; flex: 1; }
         .rank { font-size: 2.5rem; font-weight: bold; margin: 0; color: #00ff73; }
         .name { font-size: 1.5rem; margin: 5px 0; font-weight: bold; }
         .song { font-size: 1rem; color: #aaa; margin: 0; }
-
         .thumbnail {
-            width: 150px;
-            height: 90px;
-            background: #333;
-            border-radius: 10px;
-            border: 2px solid #444;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 20px;
-            overflow: hidden;
+            width: 150px; height: 90px; background: #333; border-radius: 10px;
+            border: 2px solid #444; display: flex; align-items: center;
+            justify-content: center; margin: 0 20px; overflow: hidden;
         }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-
         .view-btn {
-            background: none;
-            border: 3px solid white;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-decoration: none;
-            text-transform: uppercase;
-            transition: 0.3s;
+            background: none; border: 3px solid white; color: white;
+            padding: 10px 25px; border-radius: 10px; font-size: 1.2rem;
+            font-weight: bold; text-decoration: none; text-transform: uppercase;
         }
-        .view-btn:hover { background: white; color: black; }
-
-        /* Submission Form Styling */
         #submit-section {
-            background: #1e1e1e;
-            border: 2px dashed #00ff73;
-            padding: 20px;
-            border-radius: 15px;
-            width: 600px;
-            margin-top: 30px;
-            text-align: center;
+            background: #1e1e1e; border: 2px dashed #00ff73; padding: 20px;
+            border-radius: 15px; width: 600px; margin-top: 30px; text-align: center;
         }
-        input {
-            background: #111;
-            border: 1px solid #444;
-            color: white;
-            padding: 10px;
-            margin: 5px;
-            width: 80%;
-            border-radius: 5px;
-        }
-        #submit-btn {
-            background: #00ff73;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
+        input { background: #111; border: 1px solid #444; color: white; padding: 10px; margin: 5px; width: 80%; border-radius: 5px; }
+        #submit-btn { background: #00ff73; color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
 <body>
 
     <h1>DEMON LIST</h1>
 
-    <!-- 1. NAVIGATION -->
     <div style="margin-bottom: 20px;">
         <a href="signup.html" id="auth-link" style="color: #00ff73; text-decoration: none; font-weight: bold;">Create Account / Login</a>
     </div>
 
-    <!-- 2. THE LIST (Filled by JavaScript) -->
     <div id="list-container">
-        <p>Loading levels from database...</p>
+        <p id="status-msg">Loading levels from database...</p>
     </div>
 
-    <!-- 3. SUBMIT SECTION (Only shown if logged in) -->
     <div id="submit-section" style="display: none;">
         <h3>Submit a Record</h3>
         <form id="record-form">
@@ -129,86 +69,69 @@
     </div>
 
     <script>
-        // --- INITIALIZE SUPABASE ---
-        const supabase = supabase.createClient(
+        // Use 'sb' instead of 'supabase' to avoid name conflicts
+        const sb = window.supabase.createClient(
             'https://outwfzgqwklazecpmmfl.supabase.co', 
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
         );
 
-        // --- 1. LOAD LEVELS ---
         async function loadLevels() {
-            const { data: levels, error } = await supabase
-                .from('levels')
-                .select('*')
-                .order('rank', { ascending: true });
+            try {
+                const { data: levels, error } = await sb
+                    .from('levels')
+                    .select('*')
+                    .order('rank', { ascending: true });
 
-            if (error) {
-                console.error("Error:", error);
-                return;
-            }
+                if (error) throw error;
 
-            const container = document.getElementById('list-container');
-            container.innerHTML = ''; 
-
-            levels.forEach(level => {
-                // Try to get YouTube thumbnail
-                let thumb = 'https://via.placeholder.com';
-                if (level.video_url && level.video_url.includes('v=')) {
-                    const videoId = level.video_url.split('v=')[1].split('&')[0];
-                    thumb = `https://img.youtube.com{videoId}/0.jpg`;
+                const container = document.getElementById('list-container');
+                if (levels.length === 0) {
+                    document.getElementById('status-msg').innerText = "No levels found in database.";
+                    return;
                 }
 
-                container.innerHTML += `
-                    <div class="level-card">
-                        <div class="info">
-                            <p class="rank">#${level.rank}</p>
-                            <p class="name">${level.name}</p>
-                            <p class="song">by ${level.creator}</p>
-                        </div>
-                        <div class="thumbnail">
-                            <img src="${thumb}" alt="Thumb">
-                        </div>
-                        <a href="view.html?id=${level.id}" class="view-btn">View</a>
-                    </div>
-                `;
-            });
+                container.innerHTML = ''; 
+                levels.forEach(level => {
+                    let videoId = level.video_url ? level.video_url.split('v=')[1] : null;
+                    let thumb = videoId ? `https://img.youtube.com{videoId}/0.jpg` : 'https://via.placeholder.com';
+
+                    container.innerHTML += `
+                        <div class="level-card">
+                            <div class="info">
+                                <p class="rank">#${level.rank}</p>
+                                <p class="name">${level.name}</p>
+                                <p class="song">by ${level.creator}</p>
+                            </div>
+                            <div class="thumbnail"><img src="${thumb}" alt="Thumb"></div>
+                            <a href="#" class="view-btn">View</a>
+                        </div>`;
+                });
+            } catch (err) {
+                document.getElementById('status-msg').innerText = "Error: " + err.message;
+                console.error(err);
+            }
         }
 
-        // --- 2. CHECK LOGIN ---
         async function checkUser() {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await sb.auth.getUser();
             if (user) {
                 document.getElementById('submit-section').style.display = 'block';
-                document.getElementById('auth-link').innerText = "Logged In";
+                document.getElementById('auth-link').innerText = "Logged In as " + user.email;
             }
         }
 
-        // --- 3. SUBMIT RECORD ---
-        const recordForm = document.getElementById('record-form');
-        if (recordForm) {
-            recordForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const { data: { user } } = await supabase.auth.getUser();
-                
-                const levelName = document.getElementById('record-level').value;
-                const videoUrl = document.getElementById('record-video').value;
-
-                const { error } = await supabase
-                    .from('Records') // Matching your capital R
-                    .insert([{ 
-                        user_id: user.id, 
-                        level_name: levelName, 
-                        video_url: videoUrl,
-                        status: 'pending' 
-                    }]);
-
-                if (error) alert(error.message);
-                else {
-                    alert("Record submitted!");
-                    recordForm.reset();
-                }
-            });
-        }
+        document.getElementById('record-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { data: { user } } = await sb.auth.getUser();
+            const { error } = await sb.from('Records').insert([{ 
+                user_id: user.id, 
+                level_name: document.getElementById('record-level').value, 
+                video_url: document.getElementById('record-video').value,
+                status: 'pending' 
+            }]);
+            if (error) alert(error.message);
+            else { alert("Submitted!"); e.target.reset(); }
+        });
 
         loadLevels();
         checkUser();
