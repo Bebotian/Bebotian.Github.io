@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - Demon List</title>
     
-    <!-- 1. Use the most reliable CDN link -->
-    <script src="https://cdn.jsdelivr.net"></script>
+    <!-- Use cdnjs - Often the most compatible link -->
+    <script src="https://cdnjs.cloudflare.com"></script>
 
     <style>
         body { background-color: #121212; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 100px; }
-        .auth-container { background: #1e1e1e; padding: 40px; border-radius: 15px; border: 2px solid #333; width: 350px; text-align: center; }
+        .auth-container { background: #1e1e1e; padding: 40px; border-radius: 15px; border: 2px solid #333; width: 350px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         input { background: #111; border: 1px solid #444; color: white; padding: 12px; margin: 10px 0; width: 90%; border-radius: 5px; }
         button { background: #00ff73; color: black; border: none; padding: 12px; width: 98%; font-weight: bold; cursor: pointer; border-radius: 5px; text-transform: uppercase; }
-        .status-msg { color: #aaa; font-size: 0.8rem; margin-top: 10px; }
+        #msg { color: #00ff73; font-size: 0.8rem; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -25,54 +26,42 @@
             <input type="password" id="password" placeholder="Password (min 6 chars)" required>
             <button type="submit">Sign Up</button>
         </form>
-        <p id="msg" class="status-msg">Waiting for database tools...</p>
-        <a href="index.html" style="color:#00ff73; text-decoration:none; display:block; margin-top:15px;">← Back</a>
+        <p id="msg">Initializing Database...</p>
+        <a href="index.html" style="color:#aaa; text-decoration:none; display:block; margin-top:15px; font-size:0.8rem;">← Back</a>
     </div>
 
     <script>
         let sb;
 
-        // This function waits for the library to be ready
-        function initializeSupabase() {
+        // Try to connect every 200ms until the library is ready
+        const init = setInterval(() => {
             if (window.supabase) {
                 sb = window.supabase.createClient(
                     'https://outwfzgqwklazecpmmfl.supabase.co', 
                     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
                 );
-                document.getElementById('msg').innerText = "Database Connected.";
-            } else {
-                // If it's not ready, wait 0.5 seconds and try again
-                setTimeout(initializeSupabase, 500);
+                document.getElementById('msg').innerText = "✓ Database Ready";
+                document.getElementById('msg').style.color = "#00ff73";
+                clearInterval(init); // Stop searching once found
             }
-        }
-
-        // Start the check
-        initializeSupabase();
+        }, 200);
 
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if (!sb) {
-                alert("Database not ready yet. Please wait a second and try again.");
-                return;
-            }
+            if (!sb) return alert("Still connecting... Please wait a moment.");
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            document.getElementById('msg').innerText = "Creating account...";
 
-            document.getElementById('msg').innerText = "Signing up...";
-
-            const { data, error } = await sb.auth.signUp({
-                email: email,
-                password: password
-            });
+            const { data, error } = await sb.auth.signUp({ email, password });
 
             if (error) {
-                alert("Error: " + error.message);
-                document.getElementById('msg').innerText = "Error occurred.";
+                alert(error.message);
+                document.getElementById('msg').innerText = "Signup Failed.";
             } else {
                 alert("Success! You can now log in.");
-                window.location.href = "index.html"; 
+                window.location.href = "index.html";
             }
         });
     </script>
