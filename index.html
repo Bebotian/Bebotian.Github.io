@@ -5,238 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GD Demon List</title>
     
-    <!-- 1. LOAD THE SUPABASE LIBRARY FIRST -->
-    <script src="https://unpkg.com"></script>
+    <!-- 1. CORRECTED SUPABASE LIBRARY LINK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
     <style>
         body { 
-            background-color: #121212; 
-            color: white; 
-            font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 50px;
-            margin: 0;
+            background-color: #121212; color: white; font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex; flex-direction: column; align-items: center; padding: 50px; margin: 0;
         }
-
         h1 { margin-bottom: 40px; letter-spacing: 3px; text-transform: uppercase; }
-
-        /* The List Container */
-        #list-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
+        #list-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
         .level-card {
-            background: #1e1e1e;
-            border: 2px solid #333;
-            border-radius: 15px;
-            width: 600px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            background: #1e1e1e; border: 2px solid #333; border-radius: 15px; width: 600px;
+            padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
         }
-
         .info { text-align: left; flex: 1; }
-        .rank { font-size: 2.5rem; font-weight: bold; margin: 0; color: #00ff73; line-height: 1; }
-        .name { font-size: 1.5rem; margin: 10px 0 5px 0; font-weight: bold; }
-        .song { font-size: 1rem; color: #aaa; margin: 0; font-style: italic; }
-
+        .rank { font-size: 2.5rem; font-weight: bold; margin: 0; color: #00ff73; }
+        .name { font-size: 1.5rem; margin: 5px 0; font-weight: bold; }
+        .song { font-size: 1rem; color: #aaa; margin: 0; }
         .thumbnail {
-            width: 160px;
-            height: 90px;
-            background: #333;
-            border-radius: 10px;
-            border: 2px solid #444;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 20px;
-            overflow: hidden;
+            width: 160px; height: 90px; background: #333; border-radius: 10px; border: 2px solid #444;
+            display: flex; align-items: center; justify-content: center; margin: 0 20px; overflow: hidden;
         }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-
         .view-btn {
-            background: none;
-            border: 3px solid white;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-decoration: none;
-            text-transform: uppercase;
-            transition: 0.3s;
+            background: none; border: 3px solid white; color: white; padding: 10px 20px;
+            border-radius: 10px; font-size: 1rem; font-weight: bold; text-decoration: none;
         }
-        .view-btn:hover { background: white; color: black; }
-
-        /* Submission Form Styling */
         #submit-section {
-            background: #1e1e1e;
-            border: 2px dashed #00ff73;
-            padding: 30px;
-            border-radius: 15px;
-            width: 550px;
-            margin-top: 40px;
-            text-align: center;
+            background: #1e1e1e; border: 2px dashed #00ff73; padding: 25px; border-radius: 15px;
+            width: 550px; margin-top: 30px; text-align: center;
         }
-        #submit-section h3 { margin-top: 0; color: #00ff73; }
-        input {
-            background: #111;
-            border: 1px solid #444;
-            color: white;
-            padding: 12px;
-            margin: 8px 0;
-            width: 90%;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        #submit-btn {
-            background: #00ff73;
-            color: black;
-            border: none;
-            padding: 12px 30px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 15px;
-            width: 95%;
-            text-transform: uppercase;
-        }
-        #submit-btn:hover { background: #00cc5c; }
-        
-        #auth-link { color: #00ff73; text-decoration: none; font-weight: bold; font-size: 1.1rem; }
-        #auth-link:hover { text-decoration: underline; }
+        input { background: #111; border: 1px solid #444; color: white; padding: 10px; margin: 5px; width: 90%; border-radius: 5px; }
+        #submit-btn { background: #00ff73; color: black; border: none; padding: 10px; font-weight: bold; width: 95%; cursor: pointer; border-radius: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <h1>DEMON LIST</h1>
 
-    <!-- 1. NAVIGATION -->
-    <div style="margin-bottom: 30px;">
-        <a href="signup.html" id="auth-link">Create Account / Login</a>
+    <div style="margin-bottom: 20px;">
+        <a href="signup.html" id="auth-link" style="color: #00ff73; text-decoration: none; font-weight: bold;">Create Account / Login</a>
     </div>
 
-    <!-- 2. THE LIST (Filled by JavaScript) -->
     <div id="list-container">
         <p id="status-msg">Connecting to database...</p>
     </div>
 
-    <!-- 3. SUBMIT SECTION (Only shown if logged in) -->
     <div id="submit-section" style="display: none;">
         <h3>Submit a Record</h3>
         <form id="record-form">
-            <input type="text" id="record-level" placeholder="Level Name (e.g. Tidal Wave)" required>
-            <input type="url" id="record-video" placeholder="YouTube Video Link" required>
+            <input type="text" id="record-level" placeholder="Level Name" required>
+            <input type="url" id="record-video" placeholder="YouTube Link" required>
             <button type="submit" id="submit-btn">Send Submission</button>
         </form>
     </div>
 
     <script>
-        // THIS WAITS FOR THE LIBRARY TO LOAD COMPLETELY
-        window.onload = function() {
-            
-            if (!window.supabase) {
-                document.getElementById('status-msg').innerText = "Error: Supabase library failed to load.";
-                return;
-            }
+        // Use an IIFE to prevent "already declared" errors
+        (function() {
+            window.onload = function() {
+                if (!window.supabase) {
+                    document.getElementById('status-msg').innerText = "Supabase tools failed to load. Check your internet.";
+                    return;
+                }
 
-            // Initialize the client
-            const sb = window.supabase.createClient(
-                'https://outwfzgqwklazecpmmfl.supabase.co', 
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
-            );
+                const sb = window.supabase.createClient(
+                    'https://outwfzgqwklazecpmmfl.supabase.co', 
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
+                );
 
-            // --- FUNCTION: LOAD THE LIST ---
-            async function loadLevels() {
-                try {
-                    const { data: levels, error } = await sb
-                        .from('levels') // Make sure this is lowercase in your DB
-                        .select('*')
-                        .order('rank', { ascending: true });
+                async function loadLevels() {
+                    try {
+                        const { data: levels, error } = await sb.from('levels').select('*').order('rank', { ascending: true });
+                        if (error) throw error;
 
-                    if (error) throw error;
-
-                    const container = document.getElementById('list-container');
-                    
-                    if (!levels || levels.length === 0) {
-                        container.innerHTML = '<p style="color: #aaa;">No levels found. Add your first level in the Supabase Dashboard!</p>';
-                        return;
-                    }
-
-                    container.innerHTML = ''; // Clear "Connecting..." message
-
-                    levels.forEach(level => {
-                        // Extract YouTube ID for thumbnail
-                        let thumb = 'https://via.placeholder.com';
-                        if (level.video_url) {
-                            const match = level.video_url.match(/[?&]v=([^&]+)/);
-                            if (match) thumb = `https://img.youtube.com{match[1]}/0.jpg`;
+                        const container = document.getElementById('list-container');
+                        if (!levels || levels.length === 0) {
+                            container.innerHTML = '<p>No levels found in database.</p>';
+                            return;
                         }
 
-                        container.innerHTML += `
-                            <div class="level-card">
-                                <div class="info">
-                                    <p class="rank">#${level.rank}</p>
-                                    <p class="name">${level.name}</p>
-                                    <p class="song">by ${level.creator || 'Unknown'}</p>
-                                </div>
-                                <div class="thumbnail">
-                                    <img src="${thumb}" alt="Level Thumb">
-                                </div>
-                                <a href="#" class="view-btn">View</a>
-                            </div>
-                        `;
-                    });
-                } catch (err) {
-                    console.error("Fetch Error:", err);
-                    document.getElementById('status-msg').innerHTML = `<span style="color:red">Database Error: ${err.message}</span>`;
+                        container.innerHTML = '';
+                        levels.forEach(level => {
+                            let thumb = 'https://via.placeholder.com';
+                            if (level.video_url && level.video_url.includes('v=')) {
+                                const videoId = level.video_url.split('v=')[1].split('&')[0];
+                                thumb = `https://img.youtube.com{videoId}/0.jpg`;
+                            }
+
+                            container.innerHTML += `
+                                <div class="level-card">
+                                    <div class="info">
+                                        <p class="rank">#${level.rank}</p>
+                                        <p class="name">${level.name}</p>
+                                        <p class="song">by ${level.creator || 'Unknown'}</p>
+                                    </div>
+                                    <div class="thumbnail"><img src="${thumb}"></div>
+                                    <a href="#" class="view-btn">View</a>
+                                </div>`;
+                        });
+                    } catch (err) {
+                        document.getElementById('status-msg').innerText = "Database Error: " + err.message;
+                    }
                 }
-            }
 
-            // --- FUNCTION: CHECK AUTH ---
-            async function checkUser() {
-                const { data: { user } } = await sb.auth.getUser();
-                if (user) {
-                    document.getElementById('submit-section').style.display = 'block';
-                    document.getElementById('auth-link').innerText = "Logged In as " + user.email.split('@')[0];
+                async function checkAuth() {
+                    const { data: { user } } = await sb.auth.getUser();
+                    if (user) {
+                        document.getElementById('submit-section').style.display = 'block';
+                        document.getElementById('auth-link').innerText = "Logged In: " + user.email.split('@')[0];
+                    }
                 }
-            }
 
-            // --- FORM SUBMISSION ---
-            document.getElementById('record-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const { data: { user } } = await sb.auth.getUser();
-                
-                if (!user) return alert("Please log in first!");
+                document.getElementById('record-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const { data: { user } } = await sb.auth.getUser();
+                    if (!user) return alert("Log in first!");
 
-                const { error } = await sb
-                    .from('Records') // Matching your capital R table
-                    .insert([{ 
+                    const { error } = await sb.from('Records').insert([{ 
                         user_id: user.id, 
                         level_name: document.getElementById('record-level').value, 
                         video_url: document.getElementById('record-video').value,
                         status: 'pending' 
                     }]);
 
-                if (error) alert("Submit Error: " + error.message);
-                else {
-                    alert("Success! Your record is pending review.");
-                    e.target.reset();
-                }
-            });
+                    if (error) alert(error.message);
+                    else { alert("Success! Review pending."); e.target.reset(); }
+                });
 
-            // Run functions
-            loadLevels();
-            checkUser();
-        };
+                loadLevels();
+                checkAuth();
+            };
+        })();
     </script>
 </body>
 </html>
