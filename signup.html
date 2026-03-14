@@ -1,13 +1,41 @@
+<!-- 1. The CORRECT Supabase Library Link -->
 <script src="https://cdn.jsdelivr.net"></script>
-<script>
-  const supabase = supabase.createClient('https://outwfzgqwklazecpmmfl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA');
 
-  async function signUp() {
+<script>
+  // Initialize Supabase with your project details
+  const supabase = supabase.createClient(
+    'https://outwfzgqwklazecpmmfl.supabase.co', 
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
+  );
+
+  // This function runs when the user clicks your "Sign Up" button
+  async function handleSignUp(event) {
+    event.preventDefault(); // Prevents the page from refreshing
+
+    // Get the values from your HTML input boxes
+    // Make sure your <input> tags have these exact IDs: id="email" and id="password"
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
     const { data, error } = await supabase.auth.signUp({
-      email: 'example@email.com',
-      password: 'example-password',
+      email: email,
+      password: password,
     });
-    if (error) console.error('Error signing up:', error.message);
-    else alert('Check your email for the confirmation link!');
+
+    if (error) {
+      alert('Error: ' + error.message);
+      console.error(error);
+    } else {
+      alert('Success! Check your email to confirm your account.');
+      // Optional: Redirect them to home page after success
+      window.location.href = "index.html";
+    }
+  }
+
+  // Tell the form to use the function above when submitted
+  // This assumes your <form> tag has id="signup-form"
+  const signupForm = document.getElementById('signup-form');
+  if (signupForm) {
+    signupForm.addEventListener('submit', handleSignUp);
   }
 </script>
