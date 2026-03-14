@@ -1,41 +1,67 @@
-<!-- 1. The CORRECT Supabase Library Link -->
-<script src="https://cdn.jsdelivr.net"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Demon List</title>
+    <!-- 1. LOAD THE SUPABASE LIBRARY -->
+    <script src="https://unpkg.com"></script>
+    <style>
+        body { background-color: #121212; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 100px; }
+        .auth-container { background: #1e1e1e; padding: 40px; border-radius: 15px; border: 2px solid #333; width: 350px; text-align: center; }
+        input { background: #111; border: 1px solid #444; color: white; padding: 12px; margin: 10px 0; width: 90%; border-radius: 5px; }
+        button { background: #00ff73; color: black; border: none; padding: 12px; width: 98%; font-weight: bold; cursor: pointer; border-radius: 5px; text-transform: uppercase; }
+        .back-link { margin-top: 20px; display: block; color: #aaa; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
 
-<script>
-  // Initialize Supabase with your project details
-  const supabase = supabase.createClient(
-    'https://outwfzgqwklazecpmmfl.supabase.co', 
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
-  );
+    <div class="auth-container">
+        <h2>Create Account</h2>
+        <form id="signup-form">
+            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="password" id="password" placeholder="Password (min 6 chars)" required>
+            <button type="submit" id="signup-btn">Sign Up</button>
+        </form>
+        <a href="index.html" class="back-link">← Back to List</a>
+    </div>
 
-  // This function runs when the user clicks your "Sign Up" button
-  async function handleSignUp(event) {
-    event.preventDefault(); // Prevents the page from refreshing
+    <script>
+        // WAIT FOR LIBRARY TO LOAD
+        window.onload = function() {
+            if (!window.supabase) {
+                alert("Supabase failed to load. Check your internet.");
+                return;
+            }
 
-    // Get the values from your HTML input boxes
-    // Make sure your <input> tags have these exact IDs: id="email" and id="password"
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+            // Initialize Client
+            const sb = window.supabase.createClient(
+                'https://outwfzgqwklazecpmmfl.supabase.co', 
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
+            );
 
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
+            // Handle the Form
+            const signupForm = document.getElementById('signup-form');
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
 
-    if (error) {
-      alert('Error: ' + error.message);
-      console.error(error);
-    } else {
-      alert('Success! Check your email to confirm your account.');
-      // Optional: Redirect them to home page after success
-      window.location.href = "index.html";
-    }
-  }
+                // Attempt to sign up
+                const { data, error } = await sb.auth.signUp({
+                    email: email,
+                    password: password,
+                });
 
-  // Tell the form to use the function above when submitted
-  // This assumes your <form> tag has id="signup-form"
-  const signupForm = document.getElementById('signup-form');
-  if (signupForm) {
-    signupForm.addEventListener('submit', handleSignUp);
-  }
-</script>
+                if (error) {
+                    alert("Error: " + error.message);
+                } else {
+                    alert("Success! Please check your email for a confirmation link.");
+                    window.location.href = "index.html"; // Redirect home
+                }
+            });
+        };
+    </script>
+</body>
+</html>
