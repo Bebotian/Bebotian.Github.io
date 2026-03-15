@@ -197,7 +197,7 @@
                                 <p class="level-verifier">✅ Verified by <span>${level.Verifier || 'Unknown'}</span></p>
                             </div>
                             <div class="thumbnail"><img src="${thumb}" alt="thumbnail"></div>
-                            <a href="levels/${encodeURIComponent(level.name)}.html" class="view-btn">View</a>
+                            <a href="${encodeURIComponent(level.name)}.html" class="view-btn">View</a>
                         </div>`;
                 });
             } catch (err) {
