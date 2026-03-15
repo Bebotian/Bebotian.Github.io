@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Settings - Demon List</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobile-nav');
+            const btn = document.getElementById('hamburger-btn');
+            if (!nav || !btn) return;
+            nav.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        // Close mobile nav when clicking outside
+        document.addEventListener('click', (e) => {
+            const nav = document.getElementById('mobile-nav');
+            const btn = document.getElementById('hamburger-btn');
+            if (nav && btn && !nav.contains(e.target) && !btn.contains(e.target)) {
+                nav.classList.remove('open');
+                btn.classList.remove('open');
+            }
+        });
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #121212; color: white; font-family: sans-serif; min-height: 100vh; }
+
+        /* TOPBAR */
+        .topbar { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #181818; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; }
+        .topbar-left { display: flex; align-items: center; gap: 24px; }
+        .topbar-title { color: #00ff73; font-weight: bold; font-size: 1.1rem; letter-spacing: 2px; text-decoration: none; }
+        .topbar-title-divider { width: 1px; height: 20px; background: #333; flex-shrink: 0; }
+        .topbar-right { display: flex; align-items: center; gap: 8px; }
+        .nav-link { color: #aaa; text-decoration: none; font-size: 0.85rem; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: color 0.2s, background 0.2s; }
+        .nav-link:hover { color: white; background: #2a2a2a; }
+        .nav-link.active { color: #00ff73; }
+        .nav-btn { background: #00ff73; color: #000; text-decoration: none; font-size: 0.85rem; font-weight: bold; padding: 7px 14px; border-radius: 6px; transition: opacity 0.2s; }
+        .nav-btn:hover { opacity: 0.85; }
+        .nav-divider { width: 1px; height: 20px; background: #2a2a2a; margin: 0 4px; }
+        #auth-links { display: flex; align-items: center; gap: 8px; }
+        #auth-links a { color: #00ff73; text-decoration: none; font-weight: bold; font-size: 0.85rem; padding: 6px 12px; border: 1.5px solid #00ff73; border-radius: 6px; transition: background 0.2s, color 0.2s; }
+        #auth-links a:hover { background: #00ff73; color: #000; }
+        #user-menu-wrapper { position: relative; display: none; }
+        #user-btn { background: #1e1e1e; border: 1.5px solid #333; color: white; padding: 7px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: border-color 0.2s; }
+        #user-btn:hover { border-color: #00ff73; }
+        .avatar { width: 26px; height: 26px; border-radius: 50%; background: #00ff73; color: #000; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; flex-shrink: 0; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .chevron { font-size: 0.65rem; color: #888; transition: transform 0.2s; }
+        #user-btn.open .chevron { transform: rotate(180deg); }
+        #user-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: #1e1e1e; border: 1.5px solid #333; border-radius: 10px; min-width: 190px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        #user-dropdown.open { display: block; animation: dropIn 0.15s ease; }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-header { padding: 12px 16px; border-bottom: 1px solid #2a2a2a; font-size: 0.75rem; color: #888; }
+        .dropdown-header span { display: block; color: white; font-weight: bold; font-size: 0.9rem; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; font-size: 0.88rem; color: #ccc; transition: background 0.15s, color 0.15s; text-decoration: none; }
+        .dropdown-item:hover { background: #2a2a2a; color: white; }
+        .dropdown-item .icon { font-size: 1rem; width: 18px; text-align: center; }
+        .dropdown-divider { height: 1px; background: #2a2a2a; }
+        .dropdown-item.danger { color: #ff5555; }
+        .dropdown-item.danger:hover { background: #2a1a1a; color: #ff6666; }
+        .dropdown-item.active { color: #00ff73; background: #1a2a1a; }
+
+        /* PAGE */
+        .page-content { margin-top: 80px; max-width: 600px; margin-left: auto; margin-right: auto; padding: 20px 20px 60px; }
+        .page-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 6px; }
+        .page-subtitle { color: #888; font-size: 0.85rem; margin-bottom: 32px; }
+
+        .settings-section { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+        .section-title { padding: 14px 20px; border-bottom: 1px solid #2a2a2a; font-size: 0.75rem; font-weight: bold; color: #888; letter-spacing: 1px; text-transform: uppercase; }
+        .settings-row { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1a1a1a; gap: 20px; }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row label { font-size: 0.9rem; color: #ccc; }
+        .settings-row .hint { font-size: 0.75rem; color: #555; margin-top: 3px; }
+
+        .settings-input { background: #111; border: 1.5px solid #333; color: white; padding: 9px 12px; border-radius: 6px; font-size: 0.9rem; width: 220px; outline: none; transition: border-color 0.2s; }
+        .settings-input:focus { border-color: #00ff73; }
+        .settings-input:disabled { color: #555; cursor: not-allowed; }
+
+        /* AVATAR UPLOAD */
+        .avatar-row { display: flex; align-items: center; gap: 20px; }
+        .avatar-preview { width: 72px; height: 72px; border-radius: 50%; background: #00ff73; color: #000; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; flex-shrink: 0; overflow: hidden; border: 2px solid #333; }
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-upload-area { flex: 1; }
+        .avatar-upload-label { display: inline-flex; align-items: center; gap: 8px; background: #111; border: 1.5px dashed #444; color: #aaa; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: border-color 0.2s, color 0.2s; }
+        .avatar-upload-label:hover { border-color: #00ff73; color: white; }
+        .avatar-upload-label input { display: none; }
+        .avatar-filename { font-size: 0.75rem; color: #555; margin-top: 6px; }
+        .avatar-progress { margin-top: 8px; display: none; }
+        .avatar-progress-bg { background: #222; border-radius: 99px; height: 4px; }
+        .avatar-progress-fill { height: 100%; background: #00ff73; border-radius: 99px; width: 0%; transition: width 0.3s; }
+
+        .btn { padding: 9px 20px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; border: none; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.85; }
+        .btn-green { background: #00ff73; color: #000; }
+        .btn-outline { background: transparent; border: 1.5px solid #444; color: #ccc; }
+        .btn-outline:hover { border-color: #00ff73; color: white; opacity: 1; }
+        .btn-danger { background: transparent; border: 1.5px solid #ff5555; color: #ff5555; }
+        .btn-danger:hover { background: #2a1a1a; opacity: 1; }
+
+        #save-msg { text-align: right; font-size: 0.8rem; margin-top: 10px; height: 16px; }
+        .claim-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .claim-pending  { background: #2a2200; color: #ffcc00; border: 1px solid #554400; }
+        .claim-approved { background: #0a2a14; color: #00ff73; border: 1px solid #005522; }
+        .claim-rejected { background: #2a0a0a; color: #ff5555; border: 1px solid #551111; }
+        .claim-none     { background: #1a1a1a; color: #888; border: 1px solid #333; }
+        #claim-msg { font-size: 0.8rem; margin-top: 8px; font-weight: bold; min-height: 16px; }
+        #not-logged-in { text-align: center; margin-top: 120px; color: #888; }
+        #not-logged-in a { color: #00ff73; text-decoration: none; }
+
+        .topbar-left .topbar-title-divider { display: none; }
+            .topbar-left .topbar-title:last-of-type { display: none; }
+            .nav-btn { display: none; }
+            .hamburger { display: flex; }
+            .level-card { width: 100% !important; flex-direction: column; align-items: flex-start; }
+            .thumbnail { width: 100% !important; height: 180px !important; margin: 10px 0 !important; border-radius: 8px; }
+            .rank { font-size: 1.8rem !important; }
+            .view-btn { align-self: flex-end; }
+            .info { margin-left: 0 !important; }
+            .page-content { padding: 16px 12px 60px !important; margin-top: 68px !important; }
+            .personal-row { grid-template-columns: repeat(2, 1fr) !important; }
+            .summary-row { grid-template-columns: repeat(1, 1fr) !important; }
+            .settings-row { flex-direction: column; align-items: flex-start !important; }
+            .settings-input { width: 100% !important; }
+            .record-card { flex-direction: column; align-items: flex-start !important; }
+            .form-card { border-radius: 8px; }
+            .auth-container { width: 92vw !important; padding: 28px 20px !important; }
+        }
+
+        /* ── MOBILE RESPONSIVE ── */
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px 4px; background: none; border: none; z-index: 101; }
+        .hamburger span { width: 22px; height: 2px; background: #aaa; border-radius: 2px; transition: all 0.25s; display: block; }
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #00ff73; }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #00ff73; }
+        .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #181818; border-bottom: 1px solid #2a2a2a; z-index: 98; flex-direction: column; padding: 6px 0 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .mobile-nav.open { display: flex; }
+        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.9rem; font-weight: bold; padding: 13px 24px; border-bottom: 1px solid #1e1e1e; transition: color 0.2s, background 0.2s; display: block; }
+        .mobile-nav a.active { color: #00ff73; }
+        .mobile-nav a:hover { color: white; background: #222; }
+        .mobile-nav .mobile-submit { background: #00ff73; color: #000 !important; margin: 12px 16px 0; border-radius: 7px; text-align: center; padding: 11px 16px !important; border-bottom: none !important; }
+        @media (max-width: 768px) {
+            /* Hide desktop nav elements */
+            .topbar-left .nav-link { display: none; }
+            .topbar-left .topbar-title-divider { display: none; }
+            .topbar-left .topbar-title + .topbar-title-divider + .topbar-title { display: none; }
+            .nav-btn { display: none !important; }
+            .nav-divider { display: none; }
+            /* Show hamburger */
+            .hamburger { display: flex; }
+            /* Shrink title font */
+            .topbar-title { font-size: 0.85rem !important; letter-spacing: 1px !important; }
+            /* Level cards */
+            .level-card { width: calc(100vw - 24px) !important; flex-direction: column; align-items: flex-start !important; padding: 14px !important; gap: 10px !important; }
+            .thumbnail { width: 100% !important; height: 180px !important; margin: 0 !important; }
+            .rank { font-size: 1.8rem !important; }
+            .view-btn { align-self: stretch; text-align: center; }
+            .info { margin-left: 0 !important; width: 100%; }
+            /* Page content */
+            body { padding: 12px !important; }
+            .page-content { margin-top: 70px !important; padding: 0 !important; width: 100% !important; }
+            /* Stats tiles */
+            .personal-row { grid-template-columns: repeat(2, 1fr) !important; }
+            .summary-row { grid-template-columns: repeat(2, 1fr) !important; }
+            /* Settings */
+            .settings-row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+            .settings-input { width: 100% !important; }
+            .avatar-row { flex-direction: column !important; }
+            /* Forms */
+            .form-card { border-radius: 8px; }
+            .auth-container { width: 92vw !important; padding: 28px 20px !important; }
+            /* Records */
+            .record-card { flex-direction: column !important; align-items: flex-start !important; }
+            /* Admin claims */
+            .claim-card-top { flex-direction: column !important; }
+            .claim-actions { margin-top: 10px; }
+            /* Max widths */
+            .page-content > * { max-width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <a class="topbar-title" href="index.html">⚔ DEMON LIST</a>
+            <div class="topbar-title-divider"></div>
+            <a class="topbar-title" href="bebotian.html">⚔ BEBOTIAN DEMON LIST</a>
+            <a class="nav-link" href="stats.html">📊 Stats</a>
+            <a class="nav-link" href="rules.html">📋 Rules</a>
+            <a class="nav-link" href="about.html">ℹ️ About</a>
+        </div>
+        <div class="topbar-right">
+            <a class="nav-btn" href="submit.html">+ Submit Record</a>
+            <div class="nav-divider"></div>
+            <div id="auth-links">
+                <a href="signup.html">Sign Up</a>
+                <a href="login.html">Login</a>
+            </div>
+            <div id="user-menu-wrapper">
+                <button id="user-btn" onclick="toggleDropdown()">
+                    <div class="avatar" id="user-avatar"><span id="user-avatar-letter">?</span></div>
+                    <span id="user-label">Loading...</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div id="user-dropdown">
+                    <div class="dropdown-header">Signed in as<span id="dropdown-email"></span></div>
+                    <a class="dropdown-item" href="my-records.html"><span class="icon">🏆</span> My Records</a>
+                    <a class="dropdown-item active" href="settings.html"><span class="icon">⚙️</span> User Settings</a>
+                    <a class="dropdown-item" href="admin.html" id="admin-link" style="display:none;"><span class="icon">🛡️</span> Admin Panel</a>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item danger" onclick="logOut()"><span class="icon">🚪</span> Log Out</div>
+                </div>
+            </div>
+        </div>
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="index.html">⚔ Demon List</a>
+        <a href="bebotian.html">⚔ Bebotian Demon List</a>
+        <a href="stats.html">📊 Stats</a>
+        <a href="rules.html">📋 Rules</a>
+        <a href="about.html">ℹ️ About</a>
+        <a href="submit.html" class="mobile-nav-btn">+ Submit Record</a>
+    </div>
+
+    <div class="page-content" id="settings-content" style="display:none;">
+        <div class="page-title">⚙️ User Settings</div>
+        <div class="page-subtitle">Manage your account preferences</div>
+
+        <!-- Profile Picture -->
+        <div class="settings-section">
+            <div class="section-title">Profile Picture</div>
+            <div class="settings-row">
+                <div>
+                    <label>Avatar</label>
+                    <div class="hint">PNG only. Max 2MB. Shown on your profile and topbar.</div>
+                </div>
+                <div class="avatar-row">
+                    <div class="avatar-preview" id="avatar-preview"><span id="avatar-preview-letter">?</span></div>
+                    <div class="avatar-upload-area">
+                        <label class="avatar-upload-label">
+                            📁 Choose PNG
+                            <input type="file" id="avatar-file" accept="image/png" onchange="onAvatarSelected(this)">
+                        </label>
+                        <div class="avatar-filename" id="avatar-filename">No file chosen</div>
+                        <div class="avatar-progress" id="avatar-progress">
+                            <div class="avatar-progress-bg"><div class="avatar-progress-fill" id="avatar-progress-fill"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account -->
+        <div class="settings-section">
+            <div class="section-title">Account</div>
+            <div class="settings-row">
+                <div>
+                    <label>Email</label>
+                    <div class="hint">Your login email address</div>
+                </div>
+                <input class="settings-input" id="display-email" disabled>
+            </div>
+            <div class="settings-row">
+                <div>
+                    <label>Username</label>
+                    <div class="hint">Shown on the leaderboard</div>
+                </div>
+                <input class="settings-input" id="input-username" placeholder="Set a username">
+            </div>
+        </div>
+
+        <!-- Security -->
+        <div class="settings-section">
+            <div class="section-title">Security</div>
+            <div class="settings-row">
+                <div>
+                    <label>New Password</label>
+                    <div class="hint">Leave blank to keep current</div>
+                </div>
+                <input class="settings-input" id="input-password" type="password" placeholder="New password" autocomplete="new-password">
+            </div>
+            <div class="settings-row">
+                <div>
+                    <label>Confirm Password</label>
+                </div>
+                <input class="settings-input" id="input-password-confirm" type="password" placeholder="Confirm password" autocomplete="new-password">
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <!-- Claim Player -->
+        <div class="settings-section">
+            <div class="section-title">Claim GD Player</div>
+            <div class="settings-row" style="flex-direction:column; align-items:flex-start; gap:12px;">
+                <div>
+                    <label>Your Claim Status</label>
+                    <div class="hint">Link your Geometry Dash player name to this account.</div>
+                </div>
+                <div id="claim-status-area" style="width:100%;">
+                    <span class="claim-status claim-none" id="claim-badge">⏳ Not Claimed</span>
+                    <div style="font-size:0.8rem; color:#666; margin-top:6px;" id="claim-gd-name"></div>
+                </div>
+                <div id="claim-form-area" style="width:100%; display:none;">
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div>
+                            <label style="font-size:0.8rem; color:#888; display:block; margin-bottom:4px;">GD Player Name</label>
+                            <input class="settings-input" id="claim-name" placeholder="Your exact in-game name" style="width:100%;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; color:#888; display:block; margin-bottom:4px;">Proof Video (Unlisted YouTube)</label>
+                            <input class="settings-input" id="claim-video" placeholder="https://www.youtube.com/watch?v=..." style="width:100%;">
+                            <div style="font-size:0.73rem; color:#555; margin-top:4px;">Upload an unlisted YouTube video saying your username out loud or showing it in-game.</div>
+                        </div>
+                        <button class="btn btn-green" onclick="submitClaim()" id="claim-btn" style="width:fit-content;">Submit Claim</button>
+                    </div>
+                </div>
+                <div id="claim-msg"></div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="section-title">Danger Zone</div>
+            <div class="settings-row">
+                <div>
+                    <label>Delete Account</label>
+                    <div class="hint">This action cannot be undone</div>
+                </div>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete Account</button>
+            </div>
+        </div>
+
+        <div style="text-align:right; margin-top: 8px;">
+            <button class="btn btn-outline" onclick="window.location.href='index.html'" style="margin-right:10px;">Cancel</button>
+            <button class="btn btn-green" id="save-btn" onclick="saveSettings()">Save Changes</button>
+        </div>
+        <div id="save-msg"></div>
+    </div>
+
+    <div id="not-logged-in" style="display:none;">
+        <p>You need to be logged in to view settings.</p><br>
+        <a href="login.html">→ Go to Login</a>
+    </div>
+
+    <script>
+        const sb = supabase.createClient(
+            'https://outwfzgqwklazecpmmfl.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
+        );
+
+        let selectedAvatarFile = null;
+
+        function toggleDropdown() {
+            document.getElementById('user-btn').classList.toggle('open');
+            document.getElementById('user-dropdown').classList.toggle('open');
+        }
+        document.addEventListener('click', (e) => {
+            const w = document.getElementById('user-menu-wrapper');
+            if (w && !w.contains(e.target)) {
+                document.getElementById('user-btn').classList.remove('open');
+                document.getElementById('user-dropdown').classList.remove('open');
+            }
+        });
+        async function logOut() { await sb.auth.signOut(); window.location.href = 'index.html'; }
+
+        function setAvatarPreview(url) {
+            const preview = document.getElementById('avatar-preview');
+            const topbarAvatar = document.getElementById('user-avatar');
+            const img = `<img src="${url}" alt="avatar">`;
+            preview.innerHTML = img;
+            topbarAvatar.innerHTML = img;
+        }
+
+        function onAvatarSelected(input) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.type !== 'image/png') {
+                alert('Please select a PNG file.');
+                input.value = '';
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File too large. Max size is 2MB.');
+                input.value = '';
+                return;
+            }
+            selectedAvatarFile = file;
+            document.getElementById('avatar-filename').innerText = file.name;
+            // Show local preview immediately
+            const reader = new FileReader();
+            reader.onload = (e) => setAvatarPreview(e.target.result);
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadAvatar(userId) {
+            if (!selectedAvatarFile) return null;
+
+            const filePath = `${userId}/avatar.png`;
+            document.getElementById('avatar-progress').style.display = 'block';
+            document.getElementById('avatar-progress-fill').style.width = '40%';
+
+            // Delete old avatar first (upsert handles this but explicit delete avoids cache issues)
+            await sb.storage.from('avatars').remove([filePath]);
+
+            const { error } = await sb.storage
+                .from('avatars')
+                .upload(filePath, selectedAvatarFile, { cacheControl: '1', upsert: true });
+
+            document.getElementById('avatar-progress-fill').style.width = '100%';
+            setTimeout(() => {
+                document.getElementById('avatar-progress').style.display = 'none';
+                document.getElementById('avatar-progress-fill').style.width = '0%';
+            }, 600);
+
+            if (error) throw new Error('Avatar upload failed: ' + error.message);
+
+            const { data } = sb.storage.from('avatars').getPublicUrl(filePath);
+            // Add cache-buster so browser loads the new image
+            return data.publicUrl + '?t=' + Date.now();
+        }
+
+        async function saveSettings() {
+            const msg = document.getElementById('save-msg');
+            const password = document.getElementById('input-password').value;
+            const confirm = document.getElementById('input-password-confirm').value;
+            const username = document.getElementById('input-username').value.trim();
+            const btn = document.getElementById('save-btn');
+
+            if (password && password !== confirm) {
+                msg.style.color = '#ff5555'; msg.innerText = '✗ Passwords do not match.'; return;
+            }
+
+            btn.disabled = true;
+            msg.style.color = '#888'; msg.innerText = 'Saving...';
+
+            try {
+                const { data: { user } } = await sb.auth.getUser();
+
+                // Upload avatar if one was selected
+                let avatarUrl = user.user_metadata?.avatar_url || null;
+                if (selectedAvatarFile) {
+                    avatarUrl = await uploadAvatar(user.id);
+                }
+
+                // Build update object
+                const updates = {};
+                if (password) updates.password = password;
+
+                // Always write data so avatar + username persist together
+                updates.data = {
+                    ...user.user_metadata,
+                    ...(username ? { username } : {}),
+                    ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
+                };
+
+                const { error } = await sb.auth.updateUser(updates);
+                if (error) throw error;
+
+                msg.style.color = '#00ff73'; msg.innerText = '✓ Settings saved!';
+                document.getElementById('input-password').value = '';
+                document.getElementById('input-password-confirm').value = '';
+                selectedAvatarFile = null;
+                document.getElementById('avatar-filename').innerText = 'No file chosen';
+
+                // Update topbar label
+                const displayName = username || user.user_metadata?.username || user.email.split('@')[0];
+                document.getElementById('user-label').innerText = displayName;
+                if (avatarUrl) {
+                    setAvatarPreview(avatarUrl);
+                } else if (!user.user_metadata?.avatar_url) {
+                    document.getElementById('user-avatar-letter').innerText = displayName[0].toUpperCase();
+                }
+
+                setTimeout(() => msg.innerText = '', 3000);
+            } catch (err) {
+                msg.style.color = '#ff5555'; msg.innerText = '✗ ' + err.message;
+            }
+
+            btn.disabled = false;
+        }
+
+        function confirmDelete() {
+            if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                alert('Account deletion requires admin action. Please contact a list admin.');
+            }
+        }
+
+        async function submitClaim() {
+            const msg = document.getElementById('claim-msg');
+            const gdName = document.getElementById('claim-name').value.trim();
+            const video = document.getElementById('claim-video').value.trim();
+
+            if (!gdName) { msg.style.color='#ff5555'; msg.innerText='✗ Please enter your GD name.'; return; }
+            if (!video.includes('youtube.com/watch') && !video.includes('youtu.be/')) {
+                msg.style.color='#ff5555'; msg.innerText='✗ Please enter a valid YouTube URL.'; return;
+            }
+
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) return;
+
+            document.getElementById('claim-btn').disabled = true;
+            msg.style.color='#888'; msg.innerText='Submitting...';
+
+            // Check if name is already claimed by someone else
+            const { data: existing } = await sb.from('player_claims')
+                .select('*').eq('gd_name', gdName).eq('status', 'approved').single();
+            if (existing) {
+                msg.style.color='#ff5555'; msg.innerText='✗ That GD name is already claimed.';
+                document.getElementById('claim-btn').disabled = false;
+                return;
+            }
+
+            // Delete any existing pending/rejected claim first, then insert fresh
+            await sb.from('player_claims')
+                .delete().eq('user_id', user.id).neq('status', 'approved');
+
+            const { error } = await sb.from('player_claims').insert([{
+                user_id: user.id, gd_name: gdName, proof_video: video, status: 'pending'
+            }]);
+
+            document.getElementById('claim-btn').disabled = false;
+            if (error) {
+                msg.style.color='#ff5555'; msg.innerText='✗ ' + error.message;
+            } else {
+                msg.style.color='#00ff73'; msg.innerText='✓ Claim submitted! Awaiting admin review.';
+                document.getElementById('claim-form-area').style.display='none';
+                document.getElementById('claim-badge').className='claim-status claim-pending';
+                document.getElementById('claim-badge').innerText='⏳ Pending Review';
+                document.getElementById('claim-gd-name').innerText='GD Name: ' + gdName;
+            }
+        }
+
+        window.logOut = logOut;
+        window.toggleDropdown = toggleDropdown;
+        window.saveSettings = saveSettings;
+        window.confirmDelete = confirmDelete;
+
+        (async () => {
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) { document.getElementById('not-logged-in').style.display = 'block'; return; }
+
+            // Read from profiles table for up-to-date name + avatar + admin flag
+            const { data: profile } = await sb.from('profiles')
+                .select('username, avatar_url, is_admin').eq('id', user.id).maybeSingle();
+
+            const username = profile?.username || user.user_metadata?.username || user.email.split('@')[0];
+            const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url || null;
+
+            document.getElementById('settings-content').style.display = 'block';
+            document.getElementById('display-email').value = user.email;
+            document.getElementById('input-username').value = profile?.username || user.user_metadata?.username || '';
+            document.getElementById('auth-links').style.display = 'none';
+            document.getElementById('user-menu-wrapper').style.display = 'block';
+            if (profile?.is_admin) { const al = document.getElementById('admin-link'); if (al) al.style.display = 'flex'; }
+            document.getElementById('user-label').innerText = username;
+            document.getElementById('dropdown-email').innerText = user.email;
+
+            if (avatarUrl) {
+                setAvatarPreview(avatarUrl);
+            } else {
+                const letter = username[0].toUpperCase();
+                document.getElementById('user-avatar-letter').innerText = letter;
+                document.getElementById('avatar-preview-letter').innerText = letter;
+            }
+
+            // Load claim status — show form by default, hide if claim exists
+            document.getElementById('claim-form-area').style.display = 'block';
+            document.getElementById('claim-badge').className = 'claim-status claim-none';
+            document.getElementById('claim-badge').innerText = '— Not yet claimed';
+
+            const { data: claims, error: claimError } = await sb.from('player_claims')
+                .select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+
+            console.log('claims:', claims, 'error:', claimError);
+
+            const claim = claims && claims.length > 0 ? claims[0] : null;
+            const badge = document.getElementById('claim-badge');
+            const nameEl = document.getElementById('claim-gd-name');
+
+            if (claim) {
+                nameEl.innerText = 'GD Name: ' + claim.gd_name;
+                if (claim.status === 'approved') {
+                    badge.className = 'claim-status claim-approved'; badge.innerText = '✅ Approved';
+                    document.getElementById('claim-form-area').style.display = 'none';
+                } else if (claim.status === 'rejected') {
+                    badge.className = 'claim-status claim-rejected'; badge.innerText = '✗ Rejected';
+                } else {
+                    badge.className = 'claim-status claim-pending'; badge.innerText = '⏳ Pending Review';
+                    document.getElementById('claim-form-area').style.display = 'none';
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
