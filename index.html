@@ -160,7 +160,7 @@
   async function checkAuth() {
     const { data: { user } } = await sb.auth.getUser();
     if (user) {
-      const username = user.email.split('@')[0];
+      const username = user.user_metadata?.username || user.email.split('@')[0];
       document.getElementById('auth-links').style.display = 'none';
       document.getElementById('user-menu-wrapper').style.display = 'block';
       document.getElementById('user-label').innerText = username;
