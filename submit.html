@@ -271,7 +271,12 @@
     </div>
     </div>
     <script>
-                function toggleDropdown() {
+        const sb = supabase.createClient(
+            'https://outwfzgqwklazecpmmfl.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
+        );
+
+        function toggleDropdown() {
             document.getElementById('user-btn').classList.toggle('open');
             document.getElementById('user-dropdown').classList.toggle('open');
         }
@@ -313,19 +318,8 @@
             return { user: null, profile: null };
         }
 
-        const sb = supabase.createClient(
-            'https://outwfzgqwklazecpmmfl.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
-        );
-
-        let selectedFile = null;
-document.addEventListener('click', (e) => {
-            const w = document.getElementById('user-menu-wrapper');
-            if (w && !w.contains(e.target)) {
-                document.getElementById('user-btn').classList.remove('open');
-                document.getElementById('user-dropdown').classList.remove('open');
-            }
-        });
+        window.location.href = 'index.html'; }
+let selectedFile = null;
 window.location.href = 'index.html'; }
 
         // Drag and drop styling
