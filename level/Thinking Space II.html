@@ -124,20 +124,20 @@
 
     <div class="topbar">
         <div class="topbar-left">
-            <a class="topbar-title" href="index.html">⚔ DEMON LIST</a>
+            <a class="topbar-title" href="../index.html">⚔ DEMON LIST</a>
             <div class="topbar-title-divider"></div>
-            <a class="topbar-title" href="bebotian.html">⚔ BEBOTIAN DEMON LIST</a>
-            <a class="nav-link" href="stats.html">📊 Stats</a>
-            <a class="nav-link" href="rules.html">📋 Rules</a>
-            <a class="nav-link" href="about.html">ℹ️ About</a>
+            <a class="topbar-title" href="../bebotian.html">⚔ BEBOTIAN DEMON LIST</a>
+            <a class="nav-link" href="../stats.html">📊 Stats</a>
+            <a class="nav-link" href="../rules.html">📋 Rules</a>
+            <a class="nav-link" href="../about.html">ℹ️ About</a>
         </div>
         <div class="topbar-right">
-            <a class="nav-btn" href="submit.html">+ Submit Record</a>
+            <a class="nav-btn" href="../submit.html">+ Submit Record</a>
             <div class="nav-divider"></div>
             <button class="hamburger" id="hamburger-btn" onclick="toggleMobileNav()"><span></span><span></span><span></span></button>
             <div id="auth-links">
-                <a href="signup.html">Sign Up</a>
-                <a href="login.html">Login</a>
+                <a href="../signup.html">Sign Up</a>
+                <a href="../login.html">Login</a>
             </div>
             <div id="user-menu-wrapper">
                 <button id="user-btn" onclick="toggleDropdown()">
@@ -147,9 +147,9 @@
                 </button>
                 <div id="user-dropdown">
                     <div class="dropdown-header">Signed in as<span id="dropdown-email"></span></div>
-                    <a class="dropdown-item" href="my-records.html"><span class="icon">🏆</span> My Records</a>
-                    <a class="dropdown-item" href="settings.html"><span class="icon">⚙️</span> User Settings</a>
-                    <a class="dropdown-item" href="admin.html" id="admin-link" style="display:none;"><span class="icon">🛡️</span> Admin Panel</a>
+                    <a class="dropdown-item" href="../my-records.html"><span class="icon">🏆</span> My Records</a>
+                    <a class="dropdown-item" href="../settings.html"><span class="icon">⚙️</span> User Settings</a>
+                    <a class="dropdown-item" href="../admin.html" id="admin-link" style="display:none;"><span class="icon">🛡️</span> Admin Panel</a>
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-item danger" onclick="logOut()"><span class="icon">🚪</span> Log Out</div>
                 </div>
@@ -158,12 +158,12 @@
     </div>
 
     <div class="mobile-nav" id="mobile-nav">
-        <a href="index.html">⚔ Demon List</a>
-        <a href="bebotian.html">⚔ Bebotian Demon List</a>
-        <a href="stats.html">📊 Stats</a>
-        <a href="rules.html">📋 Rules</a>
-        <a href="about.html">ℹ️ About</a>
-        <a href="submit.html" class="m-submit">+ Submit Record</a>
+        <a href="../index.html">⚔ Demon List</a>
+        <a href="../bebotian.html">⚔ Bebotian Demon List</a>
+        <a href="../stats.html">📊 Stats</a>
+        <a href="../rules.html">📋 Rules</a>
+        <a href="../about.html">ℹ️ About</a>
+        <a href="../submit.html" class="m-submit">+ Submit Record</a>
     </div>
 
     <div class="page-content" id="page-content">
@@ -200,7 +200,7 @@
                 btn.classList.remove('open');
             }
         });
-        async function logOut() { await sb.auth.signOut(); window.location.href = 'index.html'; }
+        async function logOut() { await sb.auth.signOut(); window.location.href = '../index.html'; }
         async function initAuth() {
             const { data: { user } } = await sb.auth.getUser();
             if (!user) return null;
@@ -254,7 +254,7 @@
                         <div class="big">😔</div>
                         <h2>"${levelName}" not found</h2>
                         <p>This level doesn't exist on the list, or the filename doesn't match exactly.</p>
-                        <a href="index.html">← Back to List</a>
+                        <a href="../index.html">← Back to List</a>
                     </div>`;
                 return;
             }
@@ -335,7 +335,7 @@
 
                 <div class="action-row">
                     ${level.video_url ? `<a class="btn-watch" href="${level.video_url}" target="_blank">▶ Watch Verification</a>` : ''}
-                    <a class="btn-submit" href="submit.html">+ Submit a Record</a>
+                    <a class="btn-submit" href="../submit.html">+ Submit a Record</a>
                 </div>
 
                 ${recordsHTML}`;
