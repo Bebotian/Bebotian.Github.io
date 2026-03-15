@@ -14,6 +14,9 @@
         input { background: #111; border: 1px solid #444; color: white; padding: 12px; margin: 10px 0; width: 90%; border-radius: 5px; }
         button { background: #00ff73; color: black; border: none; padding: 12px; width: 98%; font-weight: bold; cursor: pointer; border-radius: 5px; text-transform: uppercase; }
         #msg { color: #00ff73; font-size: 0.8rem; margin-top: 15px; font-weight: bold; }
+        .links { margin-top: 15px; font-size: 0.8rem; }
+        .links a { color: #aaa; text-decoration: none; display: block; margin-top: 8px; }
+        .links a:hover { color: #00ff73; }
     </style>
 </head>
 <body>
@@ -25,7 +28,10 @@
             <button type="submit">Sign Up</button>
         </form>
         <p id="msg">Initializing Database...</p>
-        <a href="index.html" style="color:#aaa; text-decoration:none; display:block; margin-top:15px; font-size:0.8rem;">← Back</a>
+        <div class="links">
+            <a href="login.html">Already have an account? Log in</a>
+            <a href="index.html">← Back to Demon List</a>
+        </div>
     </div>
 
     <script>
