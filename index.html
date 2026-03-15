@@ -5,48 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GD Demon List</title>
     <style>
-        body { background-color: #121212; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
+        * { box-sizing: border-box; }
+        body { background-color: #121212; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; margin: 0; }
+
+        /* TOP NAV */
+        .topbar { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #181818; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; }
+        .topbar-title { color: #00ff73; font-weight: bold; font-size: 1.1rem; letter-spacing: 2px; text-decoration: none; }
+
+        /* AUTH LINKS (logged out) */
+        #auth-links a { color: #00ff73; text-decoration: none; font-weight: bold; font-size: 0.85rem; margin-left: 16px; }
+        #auth-links a:hover { text-decoration: underline; }
+
+        /* USER BUTTON (logged in) */
+        #user-menu-wrapper { position: relative; display: none; }
+        #user-btn { background: #1e1e1e; border: 1.5px solid #333; color: white; padding: 7px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: border-color 0.2s; }
+        #user-btn:hover { border-color: #00ff73; }
+        .avatar { width: 26px; height: 26px; border-radius: 50%; background: #00ff73; color: #000; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; flex-shrink: 0; }
+        .chevron { font-size: 0.65rem; color: #888; transition: transform 0.2s; }
+        #user-btn.open .chevron { transform: rotate(180deg); }
+
+        /* DROPDOWN */
+        #user-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: #1e1e1e; border: 1.5px solid #333; border-radius: 10px; min-width: 190px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        #user-dropdown.open { display: block; animation: dropIn 0.15s ease; }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-header { padding: 12px 16px; border-bottom: 1px solid #2a2a2a; font-size: 0.75rem; color: #888; }
+        .dropdown-header span { display: block; color: white; font-weight: bold; font-size: 0.9rem; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; font-size: 0.88rem; color: #ccc; transition: background 0.15s, color 0.15s; text-decoration: none; }
+        .dropdown-item:hover { background: #2a2a2a; color: white; }
+        .dropdown-item .icon { font-size: 1rem; width: 18px; text-align: center; }
+        .dropdown-divider { height: 1px; background: #2a2a2a; }
+        .dropdown-item.danger { color: #ff5555; }
+        .dropdown-item.danger:hover { background: #2a1a1a; color: #ff6666; }
+
+        /* PAGE CONTENT */
+        .page-content { margin-top: 80px; display: flex; flex-direction: column; align-items: center; width: 100%; }
         .level-card { background: #1e1e1e; border: 2px solid #333; border-radius: 15px; width: 600px; padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
         .rank { font-size: 2.5rem; font-weight: bold; color: #00ff73; margin: 0; }
         .info { flex: 1; margin-left: 20px; }
         .thumbnail { width: 160px; height: 90px; border-radius: 10px; overflow: hidden; margin-right: 20px; }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-        .view-btn { border: 2px solid white; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .view-btn { border: 2px solid white; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; white-space: nowrap; }
         #submit-section { background: #1e1e1e; border: 2px dashed #00ff73; padding: 20px; border-radius: 15px; width: 550px; margin-top: 30px; text-align: center; }
         input { background: #111; border: 1px solid #444; color: white; padding: 10px; margin: 5px; width: 80%; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <h1>DEMON LIST</h1>
+    <!-- TOP NAV BAR -->
+    <div class="topbar">
+        <a class="topbar-title" href="index.html">⚔ DEMON LIST</a>
 
-    <div style="margin-bottom: 20px;">
-        <a href="signup.html" id="auth-link" style="color: #00ff73; text-decoration: none; font-weight: bold;">Create Account</a>
-        <span style="color: #555; margin: 0 8px;">|</span>
-        <a href="login.html" style="color: #00ff73; text-decoration: none; font-weight: bold;">Login</a>
+        <!-- Shown when logged OUT -->
+        <div id="auth-links">
+            <a href="signup.html">Create Account</a>
+            <a href="login.html">Login</a>
+        </div>
+
+        <!-- Shown when logged IN -->
+        <div id="user-menu-wrapper">
+            <button id="user-btn" onclick="toggleDropdown()">
+                <div class="avatar" id="user-avatar">?</div>
+                <span id="user-label">Loading...</span>
+                <span class="chevron">▼</span>
+            </button>
+            <div id="user-dropdown">
+                <div class="dropdown-header">Signed in as<span id="dropdown-email"></span></div>
+                <a class="dropdown-item" href="my-records.html"><span class="icon">🏆</span> My Records</a>
+                <a class="dropdown-item" href="settings.html"><span class="icon">⚙️</span> User Settings</a>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item danger" onclick="logOut()"><span class="icon">🚪</span> Log Out</div>
+            </div>
+        </div>
     </div>
 
-    <div id="list-container">
-        <p id="status-msg">Connecting to database...</p>
-    </div>
+    <div class="page-content">
+        <h1>DEMON LIST</h1>
 
-    <div id="submit-section" style="display: none;">
-        <h3>Submit a Record</h3>
-        <form id="record-form">
-            <input type="text" id="record-level" placeholder="Level Name" required>
-            <input type="url" id="record-video" placeholder="YouTube Link" required>
-            <button type="submit" style="background:#00ff73; border:none; padding:10px; width:85%; cursor:pointer; font-weight:bold; margin-top:10px;">Submit</button>
-        </form>
+        <div id="list-container">
+            <p id="status-msg">Connecting to database...</p>
+        </div>
+
+        <div id="submit-section" style="display: none;">
+            <h3>Submit a Record</h3>
+            <form id="record-form">
+                <input type="text" id="record-level" placeholder="Level Name" required>
+                <input type="url" id="record-video" placeholder="YouTube Link" required>
+                <button type="submit" style="background:#00ff73; border:none; padding:10px; width:85%; cursor:pointer; font-weight:bold; margin-top:10px;">Submit</button>
+            </form>
+        </div>
     </div>
 
 <script type="module">
-  // FIX #1: Correct esm.sh import with full package name
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
   const sb = createClient(
-    'https://outwfzgqwklazecpmmfl.supabase.co', 
+    'https://outwfzgqwklazecpmmfl.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
   );
+
+  window.logOut = async () => {
+    await sb.auth.signOut();
+    window.location.reload();
+  };
+
+  window.toggleDropdown = () => {
+    const btn = document.getElementById('user-btn');
+    const drop = document.getElementById('user-dropdown');
+    btn.classList.toggle('open');
+    drop.classList.toggle('open');
+  };
+
+  document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('user-menu-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+      document.getElementById('user-btn').classList.remove('open');
+      document.getElementById('user-dropdown').classList.remove('open');
+    }
+  });
 
   async function loadLevels() {
     try {
@@ -59,15 +134,13 @@
         return;
       }
 
-      container.innerHTML = ''; 
+      container.innerHTML = '';
       levels.forEach(level => {
         let thumb = 'https://via.placeholder.com/160x90';
         if (level.video_url && level.video_url.includes('v=')) {
           const videoId = level.video_url.split('v=')[1].split('&')[0];
-          // FIX #2: Correct YouTube thumbnail URL format
           thumb = `https://img.youtube.com/vi/${videoId}/0.jpg`;
         }
-
         container.innerHTML += `
           <div class="level-card">
             <div class="info">
@@ -87,8 +160,13 @@
   async function checkAuth() {
     const { data: { user } } = await sb.auth.getUser();
     if (user) {
+      const username = user.email.split('@')[0];
+      document.getElementById('auth-links').style.display = 'none';
+      document.getElementById('user-menu-wrapper').style.display = 'block';
+      document.getElementById('user-label').innerText = username;
+      document.getElementById('user-avatar').innerText = username[0].toUpperCase();
+      document.getElementById('dropdown-email').innerText = user.email;
       document.getElementById('submit-section').style.display = 'block';
-      document.getElementById('auth-link').innerText = "Logged In: " + user.email.split('@')[0];
     }
   }
 
@@ -97,11 +175,11 @@
     const { data: { user } } = await sb.auth.getUser();
     if (!user) return alert("Log in first!");
 
-    const { error } = await sb.from('Records').insert([{ 
-      user_id: user.id, 
-      level_name: document.getElementById('record-level').value, 
+    const { error } = await sb.from('Records').insert([{
+      user_id: user.id,
+      level_name: document.getElementById('record-level').value,
       video_url: document.getElementById('record-video').value,
-      status: 'pending' 
+      status: 'pending'
     }]);
 
     if (error) alert(error.message);
