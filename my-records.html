@@ -186,14 +186,12 @@ function formatDate(iso) {
             const d = new Date(iso);
             return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         (async () => {
-            const { data: { user } } = await sb.auth.getUser();
+            const { user } = await initAuth();
             if (!user) { document.getElementById('not-logged-in').style.display = 'block'; return; }
 
             const username = user.user_metadata?.username || user.email.split('@')[0];
             document.getElementById('records-content').style.display = 'block';
-            document.getElementById('auth-links').style.display = 'none';
-            document.getElementById('user-menu-wrapper').style.display = 'block';
-            // Check admin status
+// Check admin status
             const { data: profile } = await sb.from('profiles').select('is_admin').eq('id', user.id).single();
             if (profile?.is_admin) document.getElementById('admin-link').style.display = 'flex';
             document.getElementById('user-label').innerText = username;

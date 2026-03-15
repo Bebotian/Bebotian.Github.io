@@ -254,7 +254,7 @@ window.location.href = 'index.html'; }
             renderClaims(approved, 'approved-list', 'approved');
             renderClaims(rejected, 'rejected-list', 'rejected');
         (async () => {
-            const { data: { user } } = await sb.auth.getUser();
+            const { user } = await initAuth();
             if (!user) { document.getElementById('access-denied').style.display = 'block'; return; }
 
             // Check admin
@@ -262,9 +262,7 @@ window.location.href = 'index.html'; }
             if (!profile?.is_admin) { document.getElementById('access-denied').style.display = 'block'; return; }
 
             const username = profile.username || user.email.split('@')[0];
-            document.getElementById('auth-links').style.display = 'none';
-            document.getElementById('user-menu-wrapper').style.display = 'block';
-            document.getElementById('user-label').innerText = username;
+document.getElementById('user-label').innerText = username;
             document.getElementById('user-avatar-letter').innerText = username[0].toUpperCase();
             document.getElementById('dropdown-email').innerText = user.email;
 

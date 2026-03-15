@@ -347,7 +347,7 @@ window.location.href = 'index.html'; }
             msg.style.color = '#888'; msg.innerText = 'Saving...';
 
             try {
-                const { data: { user } } = await sb.auth.getUser();
+                const { user } = await initAuth();
 
                 // Upload avatar if one was selected
                 let avatarUrl = user.user_metadata?.avatar_url || null;
@@ -396,7 +396,7 @@ window.location.href = 'index.html'; }
             if (!gdName) { msg.style.color='#ff5555'; msg.innerText='✗ Please enter your GD name.'; return; }
             if (!video.includes('youtube.com/watch') && !video.includes('youtu.be/')) {
                 msg.style.color='#ff5555'; msg.innerText='✗ Please enter a valid YouTube URL.'; return;
-                const { data: { user } } = await sb.auth.getUser();
+                const { user } = await initAuth();
             if (!user) return;
 
             document.getElementById('claim-btn').disabled = true;
@@ -431,7 +431,7 @@ window.saveSettings = saveSettings;
         window.confirmDelete = confirmDelete;
 
         (async () => {
-            const { data: { user } } = await sb.auth.getUser();
+            const { user } = await initAuth();
             if (!user) { document.getElementById('not-logged-in').style.display = 'block'; return; }
 
             // Read from profiles table for up-to-date name + avatar + admin flag
@@ -444,9 +444,7 @@ window.saveSettings = saveSettings;
             document.getElementById('settings-content').style.display = 'block';
             document.getElementById('display-email').value = user.email;
             document.getElementById('input-username').value = profile?.username || user.user_metadata?.username || '';
-            document.getElementById('auth-links').style.display = 'none';
-            document.getElementById('user-menu-wrapper').style.display = 'block';
-            if (profile?.is_admin) { const al = document.getElementById('admin-link'); if (al) al.style.display = 'flex'; }
+if (profile?.is_admin) { const al = document.getElementById('admin-link'); if (al) al.style.display = 'flex'; }
             document.getElementById('user-label').innerText = username;
             document.getElementById('dropdown-email').innerText = user.email;
 
