@@ -63,74 +63,70 @@
         .view-btn { border: 2px solid white; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; white-space: nowrap; flex-shrink: 0; }
         input { background: #111; border: 1px solid #444; color: white; padding: 10px; margin: 5px; width: 80%; border-radius: 5px; }
 
-        .topbar-left .topbar-title-divider { display: none; }
-            .topbar-left .topbar-title:last-of-type { display: none; }
-            .nav-btn { display: none; }
-            .hamburger { display: flex; }
-            .level-card { width: 100% !important; flex-direction: column; align-items: flex-start; }
-            .thumbnail { width: 100% !important; height: 180px !important; margin: 10px 0 !important; border-radius: 8px; }
-            .rank { font-size: 1.8rem !important; }
-            .view-btn { align-self: flex-end; }
-            .info { margin-left: 0 !important; }
-            .page-content { padding: 16px 12px 60px !important; margin-top: 68px !important; }
-            .personal-row { grid-template-columns: repeat(2, 1fr) !important; }
-            .summary-row { grid-template-columns: repeat(1, 1fr) !important; }
-            .settings-row { flex-direction: column; align-items: flex-start !important; }
-            .settings-input { width: 100% !important; }
-            .record-card { flex-direction: column; align-items: flex-start !important; }
-            .form-card { border-radius: 8px; }
-            .auth-container { width: 92vw !important; padding: 28px 20px !important; }
-        }
-
-        /* ── MOBILE RESPONSIVE ── */
-        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px 4px; background: none; border: none; z-index: 101; }
+        
+                /* ── HAMBURGER (hidden on desktop) ── */
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px 4px; background: none; border: none; flex-shrink: 0; }
         .hamburger span { width: 22px; height: 2px; background: #aaa; border-radius: 2px; transition: all 0.25s; display: block; }
         .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #00ff73; }
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #00ff73; }
-        .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #181818; border-bottom: 1px solid #2a2a2a; z-index: 98; flex-direction: column; padding: 6px 0 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+        /* ── MOBILE NAV DRAWER (hidden on desktop) ── */
+        .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #181818; border-bottom: 2px solid #2a2a2a; z-index: 98; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
         .mobile-nav.open { display: flex; }
-        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.9rem; font-weight: bold; padding: 13px 24px; border-bottom: 1px solid #1e1e1e; transition: color 0.2s, background 0.2s; display: block; }
-        .mobile-nav a.active { color: #00ff73; }
-        .mobile-nav a:hover { color: white; background: #222; }
-        .mobile-nav .mobile-submit { background: #00ff73; color: #000 !important; margin: 12px 16px 0; border-radius: 7px; text-align: center; padding: 11px 16px !important; border-bottom: none !important; }
+        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: bold; padding: 15px 24px; border-bottom: 1px solid #1e1e1e; transition: color 0.15s, background 0.15s; }
+        .mobile-nav a.nav-active { color: #00ff73; }
+        .mobile-nav a:active { background: #222; }
+        .mobile-nav .m-submit { background: #00ff73; color: #000; margin: 12px 16px; border-radius: 8px; text-align: center; padding: 13px; border-bottom: none; font-size: 0.95rem; }
+
+        /* ── MOBILE ONLY (phones/tablets under 768px) ── */
         @media (max-width: 768px) {
-            /* Hide desktop nav elements */
-            .topbar-left .nav-link { display: none; }
-            .topbar-left .topbar-title-divider { display: none; }
-            .topbar-left .topbar-title + .topbar-title-divider + .topbar-title { display: none; }
-            .nav-btn { display: none !important; }
-            .nav-divider { display: none; }
-            /* Show hamburger */
-            .hamburger { display: flex; }
-            /* Shrink title font */
-            .topbar-title { font-size: 0.85rem !important; letter-spacing: 1px !important; }
-            /* Level cards */
-            .level-card { width: calc(100vw - 24px) !important; flex-direction: column; align-items: flex-start !important; padding: 14px !important; gap: 10px !important; }
-            .thumbnail { width: 100% !important; height: 180px !important; margin: 0 !important; }
-            .rank { font-size: 1.8rem !important; }
-            .view-btn { align-self: stretch; text-align: center; }
-            .info { margin-left: 0 !important; width: 100%; }
-            /* Page content */
-            body { padding: 12px !important; }
-            .page-content { margin-top: 70px !important; padding: 0 !important; width: 100% !important; }
-            /* Stats tiles */
-            .personal-row { grid-template-columns: repeat(2, 1fr) !important; }
+            /* Topbar: hide desktop nav, show hamburger */
+            .topbar-left .nav-link,
+            .topbar-left .topbar-title-divider,
+            .topbar-left .topbar-title ~ .topbar-title,
+            .nav-btn, .nav-divider { display: none !important; }
+            .hamburger { display: flex !important; }
+            .topbar-title { font-size: 0.9rem !important; letter-spacing: 1px !important; }
+            .topbar { padding: 0 14px !important; }
+
+            /* Body & page layout */
+            body { padding: 10px !important; }
+            .page-content { margin-top: 70px !important; padding: 0 4px !important; width: 100% !important; align-items: stretch !important; }
+
+            /* Level cards: stack vertically */
+            .level-card { width: 100% !important; flex-direction: column !important; align-items: stretch !important; padding: 14px !important; gap: 10px !important; border-radius: 10px !important; }
+            .thumbnail { width: 100% !important; height: 190px !important; margin: 0 !important; border-radius: 8px !important; }
+            .rank { font-size: 2rem !important; }
+            .view-btn { display: block !important; text-align: center !important; width: 100% !important; }
+            .info { margin-left: 0 !important; width: 100% !important; }
+
+            /* Stats: 2 col grid */
             .summary-row { grid-template-columns: repeat(2, 1fr) !important; }
-            /* Settings */
+
+            /* Settings rows: stack label + input */
             .settings-row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
-            .settings-input { width: 100% !important; }
+            .settings-input { width: 100% !important; max-width: 100% !important; }
             .avatar-row { flex-direction: column !important; }
+            .avatar-upload-label { width: 100% !important; justify-content: center !important; }
+
+            /* Record cards */
+            .record-card { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+            .record-actions { width: 100% !important; justify-content: space-between !important; }
+
             /* Forms */
-            .form-card { border-radius: 8px; }
-            .auth-container { width: 92vw !important; padding: 28px 20px !important; }
-            /* Records */
-            .record-card { flex-direction: column !important; align-items: flex-start !important; }
-            /* Admin claims */
+            .form-row input { font-size: 0.95rem !important; }
+            .page-content > h1 { font-size: 1.3rem !important; margin-bottom: 4px !important; }
+
+            /* Admin claim cards */
             .claim-card-top { flex-direction: column !important; }
-            .claim-actions { margin-top: 10px; }
-            /* Max widths */
-            .page-content > * { max-width: 100% !important; }
+            .claim-actions { margin-top: 8px !important; flex-wrap: wrap !important; }
+
+            /* Auth pages */
+            .auth-container { width: 94vw !important; padding: 28px 18px !important; }
+
+            /* Max width fix */
+            .card, .settings-section, .form-card, .about-card { border-radius: 8px !important; }
         }
     </style>
 </head>
@@ -169,14 +165,15 @@
                 </div>
             </div>
         </div>
+
     <!-- Mobile nav drawer -->
     <div class="mobile-nav" id="mobile-nav">
-        <a href="index.html">⚔ Demon List</a>
+        <a href="index.html" class="nav-active">⚔ Demon List</a>
         <a href="bebotian.html">⚔ Bebotian Demon List</a>
         <a href="stats.html">📊 Stats</a>
         <a href="rules.html">📋 Rules</a>
         <a href="about.html">ℹ️ About</a>
-        <a href="submit.html" class="mobile-submit">+ Submit Record</a>
+        <a href="submit.html" class="m-submit">+ Submit Record</a>
     </div>
 
     <div class="page-content">
@@ -273,6 +270,21 @@
             const nav = document.getElementById('mobile-nav');
             const btn = document.getElementById('hamburger-btn');
             if (nav && btn && !nav.contains(e.target) && !btn.contains(e.target)) {
+                nav.classList.remove('open');
+                btn.classList.remove('open');
+            }
+        });
+    
+        // ── Mobile nav toggle ──
+        window.toggleMobileNav = function() {
+            document.getElementById('mobile-nav').classList.toggle('open');
+            document.getElementById('hamburger-btn').classList.toggle('open');
+        };
+        document.addEventListener('click', function(e) {
+            var nav = document.getElementById('mobile-nav');
+            var btn = document.getElementById('hamburger-btn');
+            if (!nav || !btn) return;
+            if (nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
                 nav.classList.remove('open');
                 btn.classList.remove('open');
             }
