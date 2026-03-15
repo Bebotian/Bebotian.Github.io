@@ -4,28 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Demon List</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-        function toggleMobileNav() {
-            const nav = document.getElementById('mobile-nav');
-            const btn = document.getElementById('hamburger-btn');
-            if (!nav || !btn) return;
-            nav.classList.toggle('open');
-            btn.classList.toggle('open');
-        }
-        // Close mobile nav when clicking outside
-        document.addEventListener('click', (e) => {
-            const nav = document.getElementById('mobile-nav');
-            const btn = document.getElementById('hamburger-btn');
-            if (nav && btn && !nav.contains(e.target) && !btn.contains(e.target)) {
-                nav.classList.remove('open');
-                btn.classList.remove('open');
-            }
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #121212; color: white; font-family: sans-serif; min-height: 100vh; }
-
+        * { box-sizing: border-box; }
+        body { background-color: #121212; color: white; font-family: sans-serif; margin: 0; min-height: 100vh; }
         /* TOPBAR */
         .topbar { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #181818; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; }
         .topbar-left { display: flex; align-items: center; gap: 24px; }
@@ -34,11 +16,13 @@
         .topbar-right { display: flex; align-items: center; gap: 8px; }
         .nav-link { color: #aaa; text-decoration: none; font-size: 0.85rem; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: color 0.2s, background 0.2s; }
         .nav-link:hover { color: white; background: #2a2a2a; }
+        .nav-link.active { color: #00ff73; }
         .nav-btn { background: #00ff73; color: #000; text-decoration: none; font-size: 0.85rem; font-weight: bold; padding: 7px 14px; border-radius: 6px; transition: opacity 0.2s; }
         .nav-btn:hover { opacity: 0.85; }
         .nav-divider { width: 1px; height: 20px; background: #2a2a2a; margin: 0 4px; }
         #auth-links { display: flex; align-items: center; gap: 8px; }
-        #auth-links a { color: #00ff73; text-decoration: none; font-weight: bold; font-size: 0.85rem; padding: 6px 12px; border: 1.5px solid #00ff73; border-radius: 6px; }
+        #auth-links a { color: #00ff73; text-decoration: none; font-weight: bold; font-size: 0.85rem; padding: 6px 12px; border: 1.5px solid #00ff73; border-radius: 6px; transition: background 0.2s, color 0.2s; }
+        #auth-links a:hover { background: #00ff73; color: #000; }
         #user-menu-wrapper { position: relative; display: none; }
         #user-btn { background: #1e1e1e; border: 1.5px solid #333; color: white; padding: 7px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: border-color 0.2s; }
         #user-btn:hover { border-color: #00ff73; }
@@ -57,116 +41,29 @@
         .dropdown-divider { height: 1px; background: #2a2a2a; }
         .dropdown-item.danger { color: #ff5555; }
         .dropdown-item.danger:hover { background: #2a1a1a; color: #ff6666; }
-        .dropdown-item.active { color: #00ff73; }
-
-        /* PAGE */
-        .page-content { margin-top: 80px; max-width: 800px; margin-left: auto; margin-right: auto; padding: 40px 20px 60px; }
-        h1 { font-size: 1.6rem; font-weight: bold; margin-bottom: 6px; }
-        .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 32px; }
-
-        /* TABS */
-        .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid #2a2a2a; padding-bottom: 0; }
-        .tab { padding: 10px 18px; font-size: 0.85rem; font-weight: bold; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s; }
-        .tab:hover { color: #ccc; }
-        .tab.active { color: #00ff73; border-bottom-color: #00ff73; }
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
-
-        /* CLAIM CARDS */
-        .claim-card { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
-        .claim-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
-        .claim-gd-name { font-size: 1.05rem; font-weight: bold; color: white; }
-        .claim-meta { font-size: 0.78rem; color: #666; margin-top: 3px; }
-        .claim-video { display: inline-flex; align-items: center; gap: 6px; color: #00ff73; font-size: 0.82rem; text-decoration: none; margin-top: 8px; }
-        .claim-video:hover { text-decoration: underline; }
-        .claim-actions { display: flex; gap: 8px; flex-shrink: 0; }
-        .btn-approve { background: #00ff73; color: #000; border: none; padding: 7px 16px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer; transition: opacity 0.2s; }
-        .btn-approve:hover { opacity: 0.85; }
-        .btn-reject { background: transparent; color: #ff5555; border: 1.5px solid #ff5555; padding: 7px 16px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer; transition: background 0.2s; }
-        .btn-reject:hover { background: #2a1a1a; }
-        .btn-undo { background: transparent; color: #888; border: 1.5px solid #333; padding: 7px 16px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer; transition: border-color 0.2s; }
-        .btn-undo:hover { border-color: #888; color: white; }
-
-        .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: bold; }
-        .badge-pending  { background: #2a2200; color: #ffcc00; border: 1px solid #554400; }
-        .badge-approved { background: #0a2a14; color: #00ff73; border: 1px solid #005522; }
-        .badge-rejected { background: #2a0a0a; color: #ff5555; border: 1px solid #551111; }
-
-        .empty { text-align: center; padding: 48px 20px; color: #555; font-size: 0.9rem; }
-        .access-denied { text-align: center; margin-top: 120px; color: #888; }
-        .access-denied a { color: #00ff73; text-decoration: none; }
-
-        /* FILTER ROW */
-        .filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-        .filter-btn { background: #1e1e1e; border: 1.5px solid #2a2a2a; color: #888; padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
-        .filter-btn:hover, .filter-btn.active { border-color: #00ff73; color: #00ff73; }
-
-        .count-badge { background: #2a2a2a; color: #888; border-radius: 99px; padding: 1px 7px; font-size: 0.7rem; margin-left: 4px; }
-
-        
-                /* ── HAMBURGER (hidden on desktop) ── */
+        .dropdown-item.active { color: #00ff73; background: #1a2a1a; }
+        /* HAMBURGER */
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px 4px; background: none; border: none; flex-shrink: 0; }
         .hamburger span { width: 22px; height: 2px; background: #aaa; border-radius: 2px; transition: all 0.25s; display: block; }
         .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #00ff73; }
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #00ff73; }
-
-        /* ── MOBILE NAV DRAWER (hidden on desktop) ── */
+        /* MOBILE NAV */
         .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #181818; border-bottom: 2px solid #2a2a2a; z-index: 98; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
         .mobile-nav.open { display: flex; }
-        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: bold; padding: 15px 24px; border-bottom: 1px solid #1e1e1e; transition: color 0.15s, background 0.15s; }
+        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: bold; padding: 15px 24px; border-bottom: 1px solid #1e1e1e; display: block; }
         .mobile-nav a.nav-active { color: #00ff73; }
-        .mobile-nav a:active { background: #222; }
-        .mobile-nav .m-submit { background: #00ff73; color: #000; margin: 12px 16px; border-radius: 8px; text-align: center; padding: 13px; border-bottom: none; font-size: 0.95rem; }
-
-        /* ── MOBILE ONLY (phones/tablets under 768px) ── */
+        .mobile-nav .m-submit { background: #00ff73; color: #000; margin: 12px 16px; border-radius: 8px; text-align: center; padding: 13px; border-bottom: none; }
         @media (max-width: 768px) {
-            /* Topbar: hide desktop nav, show hamburger */
-            .topbar-left .nav-link,
-            .topbar-left .topbar-title-divider,
+            .topbar-left .nav-link, .topbar-left .topbar-title-divider,
             .topbar-left .topbar-title ~ .topbar-title,
             .nav-btn, .nav-divider { display: none !important; }
             .hamburger { display: flex !important; }
-            .topbar-title { font-size: 0.9rem !important; letter-spacing: 1px !important; }
             .topbar { padding: 0 14px !important; }
-
-            /* Body & page layout */
-            .page-content { margin-top: 70px !important; padding: 12px 12px 60px !important; }
-
-            /* Level cards: stack vertically */
-            .level-card { width: 100% !important; flex-direction: column !important; align-items: flex-start !important; padding: 14px !important; gap: 10px !important; border-radius: 10px !important; }
-            .thumbnail { width: 100% !important; height: 190px !important; margin: 0 !important; border-radius: 8px !important; }
-            .rank { font-size: 2rem !important; }
-            .view-btn { display: block !important; text-align: center !important; width: 100% !important; }
-            .info { margin-left: 0 !important; width: 100% !important; }
-
-            /* Stats: 2 col grid */
-            .summary-row { grid-template-columns: repeat(2, 1fr) !important; }
-
-            /* Settings rows: stack label + input */
-            .settings-row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
-            .settings-input { width: 100% !important; max-width: 100% !important; }
-            .avatar-row { flex-direction: column !important; }
-            .avatar-upload-label { width: 100% !important; justify-content: center !important; }
-
-            /* Record cards */
-            .record-card { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
-            .record-actions { width: 100% !important; justify-content: space-between !important; }
-
-            /* Forms */
-            .form-row input { font-size: 0.95rem !important; }
-            .page-content > h1 { font-size: 1.3rem !important; margin-bottom: 4px !important; }
-
-            /* Admin claim cards */
-            .claim-card-top { flex-direction: column !important; }
-            .claim-actions { margin-top: 8px !important; flex-wrap: wrap !important; }
-
-            /* Auth pages */
-            .auth-container { width: 94vw !important; padding: 28px 18px !important; }
-
-            /* Max width fix */
-            .card, .settings-section, .form-card, .about-card { border-radius: 8px !important; }
+            .topbar-title { font-size: 0.9rem !important; letter-spacing: 1px !important; }
         }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #121212; color: white; font-family: sans-serif; min-height: 100vh; }
     </style>
 </head>
 <body>
@@ -176,6 +73,7 @@
             <a class="topbar-title" href="index.html">⚔ DEMON LIST</a>
             <div class="topbar-title-divider"></div>
             <a class="topbar-title" href="bebotian.html">⚔ BEBOTIAN DEMON LIST</a>
+            
             <a class="nav-link" href="stats.html">📊 Stats</a>
             <a class="nav-link" href="rules.html">📋 Rules</a>
             <a class="nav-link" href="about.html">ℹ️ About</a>
@@ -183,6 +81,7 @@
         <div class="topbar-right">
             <a class="nav-btn" href="submit.html">+ Submit Record</a>
             <div class="nav-divider"></div>
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileNav()"><span></span><span></span><span></span></button>
             <div id="auth-links">
                 <a href="signup.html">Sign Up</a>
                 <a href="login.html">Login</a>
@@ -197,7 +96,7 @@
                     <div class="dropdown-header">Signed in as<span id="dropdown-email"></span></div>
                     <a class="dropdown-item" href="my-records.html"><span class="icon">🏆</span> My Records</a>
                     <a class="dropdown-item" href="settings.html"><span class="icon">⚙️</span> User Settings</a>
-                    <a class="dropdown-item active" href="admin.html"><span class="icon">🛡️</span> Admin Panel</a>
+                    <a class="dropdown-item" href="admin.html" id="admin-link" style="display:none;"><span class="icon">🛡️</span> Admin Panel</a>
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-item danger" onclick="logOut()"><span class="icon">🚪</span> Log Out</div>
                 </div>
@@ -205,7 +104,15 @@
         </div>
     </div>
 
-    <!-- Access denied state -->
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="index.html">⚔ Demon List</a>
+        <a href="bebotian.html">⚔ Bebotian Demon List</a>
+        <a href="stats.html">📊 Stats</a>
+        <a href="rules.html">📋 Rules</a>
+        <a href="about.html">ℹ️ About</a>
+        <a href="submit.html" class="m-submit">+ Submit Record</a>
+    </div>
+
     <div id="access-denied" style="display:none;" class="access-denied">
         <p style="font-size:1.5rem; margin-bottom:12px;">🔒</p>
         <p>You don't have permission to view this page.</p><br>
@@ -235,26 +142,15 @@
     </div>
 
     <!-- Mobile nav drawer -->
-    <div class="mobile-nav" id="mobile-nav">
-        <a href="index.html">⚔ Demon List</a>
-        <a href="bebotian.html">⚔ Bebotian Demon List</a>
-        <a href="stats.html">📊 Stats</a>
-        <a href="rules.html">📋 Rules</a>
-        <a href="about.html">ℹ️ About</a>
-        <a href="submit.html" class="m-submit">+ Submit Record</a>
-    </div>
 
     <script>
-        const sb = supabase.createClient(
-            'https://outwfzgqwklazecpmmfl.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
-        );
-
-        let allClaims = [];
-
-        function toggleDropdown() {
+                function toggleDropdown() {
             document.getElementById('user-btn').classList.toggle('open');
             document.getElementById('user-dropdown').classList.toggle('open');
+        }
+        function toggleMobileNav() {
+            document.getElementById('mobile-nav').classList.toggle('open');
+            document.getElementById('hamburger-btn').classList.toggle('open');
         }
         document.addEventListener('click', (e) => {
             const w = document.getElementById('user-menu-wrapper');
@@ -262,8 +158,48 @@
                 document.getElementById('user-btn').classList.remove('open');
                 document.getElementById('user-dropdown').classList.remove('open');
             }
+            const nav = document.getElementById('mobile-nav');
+            const btn = document.getElementById('hamburger-btn');
+            if (nav && btn && nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+                nav.classList.remove('open');
+                btn.classList.remove('open');
+            }
         });
         async function logOut() { await sb.auth.signOut(); window.location.href = 'index.html'; }
+        async function initAuth() {
+            const { data: { user } } = await sb.auth.getUser();
+            if (user) {
+                document.getElementById('auth-links').style.display = 'none';
+                document.getElementById('user-menu-wrapper').style.display = 'block';
+                document.getElementById('dropdown-email').innerText = user.email;
+                const { data: profile } = await sb.from('profiles').select('is_admin, username, avatar_url').eq('id', user.id).maybeSingle();
+                const username = profile?.username || user.user_metadata?.username || user.email.split('@')[0];
+                document.getElementById('user-label').innerText = username;
+                if (profile?.avatar_url) {
+                    document.getElementById('user-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar">`;
+                } else {
+                    document.getElementById('user-avatar-letter').innerText = username[0].toUpperCase();
+                }
+                if (profile?.is_admin) { const al = document.getElementById('admin-link'); if (al) al.style.display = 'flex'; }
+                return { user, profile };
+            }
+            return { user: null, profile: null };
+        }
+
+        const sb = supabase.createClient(
+            'https://outwfzgqwklazecpmmfl.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
+        );
+
+        let allClaims = [];
+document.addEventListener('click', (e) => {
+            const w = document.getElementById('user-menu-wrapper');
+            if (w && !w.contains(e.target)) {
+                document.getElementById('user-btn').classList.remove('open');
+                document.getElementById('user-dropdown').classList.remove('open');
+            }
+        });
+window.location.href = 'index.html'; }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach((t, i) => {
@@ -346,19 +282,9 @@
         })();
     
         // ── Mobile nav toggle ──
-        window.toggleMobileNav = function() {
-            document.getElementById('mobile-nav').classList.toggle('open');
-            document.getElementById('hamburger-btn').classList.toggle('open');
-        };
-        document.addEventListener('click', function(e) {
-            var nav = document.getElementById('mobile-nav');
-            var btn = document.getElementById('hamburger-btn');
-            if (!nav || !btn) return;
-            if (nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
-                nav.classList.remove('open');
-                btn.classList.remove('open');
-            }
-        });
+
+        initAuth();
     </script>
+
 </body>
 </html>
