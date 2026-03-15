@@ -17,17 +17,19 @@
     </style>
 </head>
 <body>
- 
+
     <h1>DEMON LIST</h1>
- 
+
     <div style="margin-bottom: 20px;">
-        <a href="signup.html" id="auth-link" style="color: #00ff73; text-decoration: none; font-weight: bold;">Create Account / Login</a>
+        <a href="signup.html" id="auth-link" style="color: #00ff73; text-decoration: none; font-weight: bold;">Create Account</a>
+        <span style="color: #555; margin: 0 8px;">|</span>
+        <a href="login.html" style="color: #00ff73; text-decoration: none; font-weight: bold;">Login</a>
     </div>
- 
+
     <div id="list-container">
         <p id="status-msg">Connecting to database...</p>
     </div>
- 
+
     <div id="submit-section" style="display: none;">
         <h3>Submit a Record</h3>
         <form id="record-form">
@@ -36,27 +38,27 @@
             <button type="submit" style="background:#00ff73; border:none; padding:10px; width:85%; cursor:pointer; font-weight:bold; margin-top:10px;">Submit</button>
         </form>
     </div>
- 
+
 <script type="module">
   // FIX #1: Correct esm.sh import with full package name
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
- 
+
   const sb = createClient(
     'https://outwfzgqwklazecpmmfl.supabase.co', 
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
   );
- 
+
   async function loadLevels() {
     try {
       const { data: levels, error } = await sb.from('levels').select('*').order('rank', { ascending: true });
       if (error) throw error;
- 
+
       const container = document.getElementById('list-container');
       if (!levels || levels.length === 0) {
         container.innerHTML = '<p>No levels found in database.</p>';
         return;
       }
- 
+
       container.innerHTML = ''; 
       levels.forEach(level => {
         let thumb = 'https://via.placeholder.com/160x90';
@@ -65,7 +67,7 @@
           // FIX #2: Correct YouTube thumbnail URL format
           thumb = `https://img.youtube.com/vi/${videoId}/0.jpg`;
         }
- 
+
         container.innerHTML += `
           <div class="level-card">
             <div class="info">
@@ -81,7 +83,7 @@
       document.getElementById('status-msg').innerText = "Database Error: " + err.message;
     }
   }
- 
+
   async function checkAuth() {
     const { data: { user } } = await sb.auth.getUser();
     if (user) {
@@ -89,23 +91,23 @@
       document.getElementById('auth-link').innerText = "Logged In: " + user.email.split('@')[0];
     }
   }
- 
+
   document.getElementById('record-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const { data: { user } } = await sb.auth.getUser();
     if (!user) return alert("Log in first!");
- 
+
     const { error } = await sb.from('Records').insert([{ 
       user_id: user.id, 
       level_name: document.getElementById('record-level').value, 
       video_url: document.getElementById('record-video').value,
       status: 'pending' 
     }]);
- 
+
     if (error) alert(error.message);
     else { alert("Success! Review pending."); e.target.reset(); }
   });
- 
+
   loadLevels();
   checkAuth();
 </script>
