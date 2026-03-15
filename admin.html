@@ -8,7 +8,6 @@
     <style>
         * { box-sizing: border-box; }
         body { background-color: #121212; color: white; font-family: sans-serif; margin: 0; min-height: 100vh; }
-        /* TOPBAR */
         .topbar { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #181818; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; }
         .topbar-left { display: flex; align-items: center; gap: 24px; }
         .topbar-title { color: #00ff73; font-weight: bold; font-size: 1.1rem; letter-spacing: 2px; text-decoration: none; }
@@ -41,39 +40,58 @@
         .dropdown-divider { height: 1px; background: #2a2a2a; }
         .dropdown-item.danger { color: #ff5555; }
         .dropdown-item.danger:hover { background: #2a1a1a; color: #ff6666; }
-        .dropdown-item.active { color: #00ff73; background: #1a2a1a; }
-        /* HAMBURGER */
+        .dropdown-item.active { color: #00ff73; }
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px 4px; background: none; border: none; flex-shrink: 0; }
         .hamburger span { width: 22px; height: 2px; background: #aaa; border-radius: 2px; transition: all 0.25s; display: block; }
         .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #00ff73; }
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #00ff73; }
-        /* MOBILE NAV */
         .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #181818; border-bottom: 2px solid #2a2a2a; z-index: 98; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
         .mobile-nav.open { display: flex; }
         .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: bold; padding: 15px 24px; border-bottom: 1px solid #1e1e1e; display: block; }
         .mobile-nav a.nav-active { color: #00ff73; }
         .mobile-nav .m-submit { background: #00ff73; color: #000; margin: 12px 16px; border-radius: 8px; text-align: center; padding: 13px; border-bottom: none; }
         @media (max-width: 768px) {
-            .topbar-left .nav-link, .topbar-left .topbar-title-divider,
-            .topbar-left .topbar-title ~ .topbar-title,
-            .nav-btn, .nav-divider { display: none !important; }
+            .topbar-left .nav-link, .topbar-left .topbar-title-divider, .topbar-left .topbar-title ~ .topbar-title, .nav-btn, .nav-divider { display: none !important; }
             .hamburger { display: flex !important; }
             .topbar { padding: 0 14px !important; }
             .topbar-title { font-size: 0.9rem !important; letter-spacing: 1px !important; }
         }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #121212; color: white; font-family: sans-serif; min-height: 100vh; }
+        .page-content { margin-top: 80px; max-width: 800px; margin-left: auto; margin-right: auto; padding: 40px 20px 60px; }
+        h1 { font-size: 1.6rem; margin-bottom: 6px; }
+        .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 32px; }
+        .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid #2a2a2a; }
+        .tab { padding: 10px 18px; font-size: 0.85rem; font-weight: bold; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s; }
+        .tab:hover { color: #ccc; }
+        .tab.active { color: #00ff73; border-bottom-color: #00ff73; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .claim-card { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+        .claim-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+        .claim-gd-name { font-size: 1.05rem; font-weight: bold; color: white; }
+        .claim-meta { font-size: 0.78rem; color: #666; margin-top: 3px; }
+        .claim-video { display: inline-flex; align-items: center; gap: 6px; color: #00ff73; font-size: 0.82rem; text-decoration: none; margin-top: 8px; }
+        .claim-video:hover { text-decoration: underline; }
+        .claim-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-approve { background: #00ff73; color: #000; border: none; padding: 7px 16px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer; }
+        .btn-approve:hover { opacity: 0.85; }
+        .btn-reject { background: transparent; color: #ff5555; border: 1.5px solid #ff5555; padding: 7px 16px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer; }
+        .btn-reject:hover { background: #2a1a1a; }
+        .btn-undo { background: transparent; color: #888; border: 1.5px solid #333; padding: 7px 16px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer; }
+        .btn-undo:hover { border-color: #888; color: white; }
+        .count-badge { background: #2a2a2a; color: #888; border-radius: 99px; padding: 1px 7px; font-size: 0.7rem; margin-left: 4px; }
+        .empty { text-align: center; padding: 48px 20px; color: #555; font-size: 0.9rem; }
+        .access-denied { text-align: center; margin-top: 120px; color: #888; }
+        .access-denied a { color: #00ff73; text-decoration: none; }
+        @media (max-width: 768px) { .claim-card-top { flex-direction: column; } .claim-actions { margin-top: 8px; } }
     </style>
 </head>
 <body>
-
     <div class="topbar">
         <div class="topbar-left">
             <a class="topbar-title" href="index.html">⚔ DEMON LIST</a>
             <div class="topbar-title-divider"></div>
             <a class="topbar-title" href="bebotian.html">⚔ BEBOTIAN DEMON LIST</a>
-            
             <a class="nav-link" href="stats.html">📊 Stats</a>
             <a class="nav-link" href="rules.html">📋 Rules</a>
             <a class="nav-link" href="about.html">ℹ️ About</a>
@@ -103,7 +121,6 @@
             </div>
         </div>
     </div>
-
     <div class="mobile-nav" id="mobile-nav">
         <a href="index.html">⚔ Demon List</a>
         <a href="bebotian.html">⚔ Bebotian Demon List</a>
@@ -112,42 +129,25 @@
         <a href="about.html">ℹ️ About</a>
         <a href="submit.html" class="m-submit">+ Submit Record</a>
     </div>
-
     <div id="access-denied" style="display:none;" class="access-denied">
-        <p style="font-size:1.5rem; margin-bottom:12px;">🔒</p>
+        <p style="font-size:1.5rem;margin-bottom:12px">🔒</p>
         <p>You don't have permission to view this page.</p><br>
         <a href="index.html">← Back to List</a>
     </div>
-
-    <!-- Admin content -->
     <div class="page-content" id="admin-content" style="display:none;">
         <h1>🛡️ Admin Panel</h1>
         <p class="subtitle">Manage player claims and site content.</p>
-
         <div class="tabs">
             <div class="tab active" onclick="switchTab('claims')">Player Claims <span class="count-badge" id="pending-count">0</span></div>
             <div class="tab" onclick="switchTab('approved')">Approved <span class="count-badge" id="approved-count">0</span></div>
             <div class="tab" onclick="switchTab('rejected')">Rejected <span class="count-badge" id="rejected-count">0</span></div>
         </div>
-
-        <div id="tab-claims" class="tab-panel active">
-            <div id="claims-list"><div class="empty">Loading...</div></div>
-        </div>
-        <div id="tab-approved" class="tab-panel">
-            <div id="approved-list"><div class="empty">Loading...</div></div>
-        </div>
-        <div id="tab-rejected" class="tab-panel">
-            <div id="rejected-list"><div class="empty">Loading...</div></div>
-        </div>
+        <div id="tab-claims" class="tab-panel active"><div id="claims-list"><div class="empty">Loading...</div></div></div>
+        <div id="tab-approved" class="tab-panel"><div id="approved-list"><div class="empty">Loading...</div></div></div>
+        <div id="tab-rejected" class="tab-panel"><div id="rejected-list"><div class="empty">Loading...</div></div></div>
     </div>
-
-    <!-- Mobile nav drawer -->
-
     <script>
-        const sb = supabase.createClient(
-            'https://outwfzgqwklazecpmmfl.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
-        );
+        const sb = supabase.createClient('https://outwfzgqwklazecpmmfl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA');
 
         function toggleDropdown() {
             document.getElementById('user-btn').classList.toggle('open');
@@ -173,110 +173,75 @@
         async function logOut() { await sb.auth.signOut(); window.location.href = 'index.html'; }
         async function initAuth() {
             const { data: { user } } = await sb.auth.getUser();
-            if (user) {
-                document.getElementById('auth-links').style.display = 'none';
-                document.getElementById('user-menu-wrapper').style.display = 'block';
-                document.getElementById('dropdown-email').innerText = user.email;
-                const { data: profile } = await sb.from('profiles').select('is_admin, username, avatar_url').eq('id', user.id).maybeSingle();
-                const username = profile?.username || user.user_metadata?.username || user.email.split('@')[0];
-                document.getElementById('user-label').innerText = username;
-                if (profile?.avatar_url) {
-                    document.getElementById('user-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar">`;
-                } else {
-                    document.getElementById('user-avatar-letter').innerText = username[0].toUpperCase();
-                }
-                if (profile?.is_admin) { const al = document.getElementById('admin-link'); if (al) al.style.display = 'flex'; }
-                return { user, profile };
+            if (!user) return null;
+            document.getElementById('auth-links').style.display = 'none';
+            document.getElementById('user-menu-wrapper').style.display = 'block';
+            document.getElementById('dropdown-email').innerText = user.email;
+            const { data: profile } = await sb.from('profiles').select('is_admin, username, avatar_url').eq('id', user.id).maybeSingle();
+            const username = profile?.username || user.user_metadata?.username || user.email.split('@')[0];
+            document.getElementById('user-label').innerText = username;
+            if (profile?.avatar_url) {
+                document.getElementById('user-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar">`;
+            } else {
+                document.getElementById('user-avatar-letter').innerText = username[0].toUpperCase();
             }
-            return { user: null, profile: null };
+            if (profile?.is_admin) { const al = document.getElementById('admin-link'); if (al) al.style.display = 'flex'; }
+            return { user, profile };
         }
-
-        window.location.href = 'index.html'; }
-let allClaims = [];
-window.location.href = 'index.html'; }
-
+        let allClaims = [];
         function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach((t, i) => {
-                t.classList.toggle('active', ['claims','approved','rejected'][i] === tab);
-            });
+            document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active',['claims','approved','rejected'][i]===tab));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.add('active');
-        function formatDate(iso) {
-            if (!iso) return '';
-            return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-        function renderClaims(claims, containerId, showActions) {
+            document.getElementById('tab-'+tab).classList.add('active');
+        }
+        function formatDate(iso) { if(!iso) return ''; return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+        function renderClaims(claims, containerId, type) {
             const el = document.getElementById(containerId);
-            if (!claims.length) { el.innerHTML = '<div class="empty">No claims here.</div>'; return; }
+            if (!claims.length) { el.innerHTML='<div class="empty">No claims here.</div>'; return; }
             el.innerHTML = claims.map(c => `
-                <div class="claim-card" id="claim-${c.id}">
+                <div class="claim-card">
                     <div class="claim-card-top">
                         <div>
                             <div class="claim-gd-name">⚔ ${c.gd_name}</div>
-                            <div class="claim-meta">User ID: ${c.user_id.slice(0,12)}... · Submitted ${formatDate(c.created_at)}</div>
+                            <div class="claim-meta">User: ${c.user_id.slice(0,12)}... · ${formatDate(c.created_at)}</div>
                             <a class="claim-video" href="${c.proof_video}" target="_blank">▶ View Proof Video</a>
                         </div>
                         <div class="claim-actions">
-                            ${showActions === 'pending' ? `
-                                <button class="btn-approve" onclick="updateClaim(${c.id}, 'approved')">✓ Approve</button>
-                                <button class="btn-reject" onclick="updateClaim(${c.id}, 'rejected')">✗ Reject</button>
-                            ` : `
-                                <button class="btn-undo" onclick="updateClaim(${c.id}, 'pending')">↩ Reset to Pending</button>
-                            `}
+                            ${type==='pending'
+                                ? `<button class="btn-approve" onclick="updateClaim(${c.id},'approved')">✓ Approve</button><button class="btn-reject" onclick="updateClaim(${c.id},'rejected')">✗ Reject</button>`
+                                : `<button class="btn-undo" onclick="updateClaim(${c.id},'pending')">↩ Reset</button>`}
                         </div>
                     </div>
                 </div>`).join('');
-        async function updateClaim(id, newStatus) {
-            const { error } = await sb.from('player_claims').update({ status: newStatus }).eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
-
-            // If approving, also update the profile's username to the gd_name
-            if (newStatus === 'approved') {
-                const claim = allClaims.find(c => c.id === id);
-                if (claim) {
-                    await sb.from('profiles').update({ username: claim.gd_name }).eq('id', claim.user_id);
-                }
-                // Reload
-            await loadClaims();
+        }
+        async function updateClaim(id, status) {
+            const { error } = await sb.from('player_claims').update({status}).eq('id',id);
+            if (error) { alert('Error: '+error.message); return; }
+            if (status==='approved') {
+                const claim = allClaims.find(c=>c.id===id);
+                if (claim) await sb.from('profiles').update({username:claim.gd_name}).eq('id',claim.user_id);
+            }
+            loadClaims();
+        }
         async function loadClaims() {
-            const { data, error } = await sb.from('player_claims').select('*').order('created_at', { ascending: false });
-            if (error) { console.error(error); return; }
-
-            allClaims = data || [];
-            const pending  = allClaims.filter(c => c.status === 'pending');
-            const approved = allClaims.filter(c => c.status === 'approved');
-            const rejected = allClaims.filter(c => c.status === 'rejected');
-
-            document.getElementById('pending-count').innerText  = pending.length;
-            document.getElementById('approved-count').innerText = approved.length;
-            document.getElementById('rejected-count').innerText = rejected.length;
-
-            renderClaims(pending,  'claims-list',   'pending');
-            renderClaims(approved, 'approved-list', 'approved');
-            renderClaims(rejected, 'rejected-list', 'rejected');
+            const { data } = await sb.from('player_claims').select('*').order('created_at',{ascending:false});
+            allClaims = data||[];
+            const pending=allClaims.filter(c=>c.status==='pending');
+            const approved=allClaims.filter(c=>c.status==='approved');
+            const rejected=allClaims.filter(c=>c.status==='rejected');
+            document.getElementById('pending-count').innerText=pending.length;
+            document.getElementById('approved-count').innerText=approved.length;
+            document.getElementById('rejected-count').innerText=rejected.length;
+            renderClaims(pending,'claims-list','pending');
+            renderClaims(approved,'approved-list','approved');
+            renderClaims(rejected,'rejected-list','rejected');
+        }
         (async () => {
-            const { user } = await initAuth();
-            if (!user) { document.getElementById('access-denied').style.display = 'block'; return; }
-
-            // Check admin
-            const { data: profile } = await sb.from('profiles').select('is_admin, username').eq('id', user.id).single();
-            if (!profile?.is_admin) { document.getElementById('access-denied').style.display = 'block'; return; }
-
-            const username = profile.username || user.email.split('@')[0];
-document.getElementById('user-label').innerText = username;
-            document.getElementById('user-avatar-letter').innerText = username[0].toUpperCase();
-            document.getElementById('dropdown-email').innerText = user.email;
-
-            const avatarUrl = user.user_metadata?.avatar_url || null;
-            if (avatarUrl) document.getElementById('user-avatar').innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
-
-            document.getElementById('admin-content').style.display = 'block';
-            await loadClaims();
+            const auth = await initAuth();
+            if (!auth || !auth.profile?.is_admin) { document.getElementById('access-denied').style.display='block'; return; }
+            document.getElementById('admin-content').style.display='block';
+            loadClaims();
         })();
-    
-        // ── Mobile nav toggle ──
-
-        initAuth();
     </script>
-
 </body>
 </html>

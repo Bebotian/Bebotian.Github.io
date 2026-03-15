@@ -8,42 +8,6 @@
     <style>
         * { box-sizing: border-box; }
         body { background-color: #121212; color: white; font-family: sans-serif; margin: 0; min-height: 100vh; }
-        /* TOPBAR */
-        .topbar { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #181818; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; }
-        .topbar-left { display: flex; align-items: center; gap: 24px; }
-        .topbar-title { color: #00ff73; font-weight: bold; font-size: 1.1rem; letter-spacing: 2px; text-decoration: none; }
-        .topbar-title-divider { width: 1px; height: 20px; background: #333; flex-shrink: 0; }
-        .topbar-right { display: flex; align-items: center; gap: 8px; }
-        .nav-link { color: #aaa; text-decoration: none; font-size: 0.85rem; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: color 0.2s, background 0.2s; }
-        .nav-link:hover { color: white; background: #2a2a2a; }
-        .nav-link.active { color: #00ff73; }
-        .nav-btn { background: #00ff73; color: #000; text-decoration: none; font-size: 0.85rem; font-weight: bold; padding: 7px 14px; border-radius: 6px; transition: opacity 0.2s; }
-        .nav-btn:hover { opacity: 0.85; }
-        .nav-divider { width: 1px; height: 20px; background: #2a2a2a; margin: 0 4px; }
-
-
-        /* HAMBURGER */
-        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px 4px; background: none; border: none; flex-shrink: 0; }
-        .hamburger span { width: 22px; height: 2px; background: #aaa; border-radius: 2px; transition: all 0.25s; display: block; }
-        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #00ff73; }
-        .hamburger.open span:nth-child(2) { opacity: 0; }
-        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #00ff73; }
-        /* MOBILE NAV */
-        .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #181818; border-bottom: 2px solid #2a2a2a; z-index: 98; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .mobile-nav.open { display: flex; }
-        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: bold; padding: 15px 24px; border-bottom: 1px solid #1e1e1e; display: block; }
-        .mobile-nav a.nav-active { color: #00ff73; }
-        .mobile-nav .m-submit { background: #00ff73; color: #000; margin: 12px 16px; border-radius: 8px; text-align: center; padding: 13px; border-bottom: none; }
-        @media (max-width: 768px) {
-            .topbar-left .nav-link, .topbar-left .topbar-title-divider,
-            .topbar-left .topbar-title ~ .topbar-title,
-            .nav-btn, .nav-divider { display: none !important; }
-            .hamburger { display: flex !important; }
-            .topbar { padding: 0 14px !important; }
-            .topbar-title { font-size: 0.9rem !important; letter-spacing: 1px !important; }
-        }
-* { box-sizing: border-box; }
-        body { background-color: #121212; color: white; font-family: sans-serif; margin: 0; }
         .topbar { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #181818; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; }
         .topbar-left { display: flex; align-items: center; gap: 24px; }
         .topbar-title { color: #00ff73; font-weight: bold; font-size: 1.1rem; letter-spacing: 2px; text-decoration: none; }
@@ -76,62 +40,53 @@
         .dropdown-divider { height: 1px; background: #2a2a2a; }
         .dropdown-item.danger { color: #ff5555; }
         .dropdown-item.danger:hover { background: #2a1a1a; color: #ff6666; }
-
-        /* PAGE */
-        .page-content { margin-top: 80px; max-width: 720px; margin-left: auto; margin-right: auto; padding: 40px 20px 60px; }
-        h1 { font-size: 1.6rem; margin-bottom: 6px; }
-        .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 32px; }
-
-        /* PERSONAL STATS */
-        .section-label { font-size: 0.72rem; font-weight: bold; color: #555; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
-        .personal-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
-        .personal-tile { background: #0f1f14; border: 1.5px solid #00ff7344; border-radius: 12px; padding: 18px 12px; text-align: center; position: relative; overflow: hidden; }
-        .personal-tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #00ff73, #00cc5a); }
-        .personal-tile .tile-val { font-size: 1.7rem; font-weight: bold; color: #00ff73; line-height: 1; }
-        .personal-tile .tile-label { font-size: 0.72rem; color: #88bb99; margin-top: 6px; line-height: 1.4; }
-
-        /* GLOBAL SUMMARY TILES */
-        .summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 32px; }
-        .summary-tile { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; padding: 20px; text-align: center; }
-        .summary-tile .tile-val { font-size: 2rem; font-weight: bold; color: #00ff73; }
-        .summary-tile .tile-label { font-size: 0.8rem; color: #888; margin-top: 4px; }
-
-        /* TABLES */
-        .stats-table { width: 100%; border-collapse: collapse; }
-        .stats-table th { text-align: left; padding: 10px 14px; font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #2a2a2a; }
-        .stats-table td { padding: 12px 14px; font-size: 0.9rem; border-bottom: 1px solid #1a1a1a; }
-        .stats-table tr:last-child td { border-bottom: none; }
-        .stats-table tr:hover td { background: #222; }
-        .stats-table .rank-num { color: #00ff73; font-weight: bold; width: 40px; }
-        .medal { font-size: 1rem; }
-        .card { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
-        .card-header { padding: 14px 20px; border-bottom: 1px solid #2a2a2a; font-size: 0.75rem; font-weight: bold; color: #888; letter-spacing: 1px; text-transform: uppercase; }
-
-        /* highlight current user's row */
-        .you-row td { background: #0f1f14 !important; color: #00ff73; }
-        .you-badge { font-size: 0.7rem; background: #00ff7322; color: #00ff73; border: 1px solid #00ff7355; border-radius: 4px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; }
-
-        
-                /* ── HAMBURGER (hidden on desktop) ── */
+        .dropdown-item.active { color: #00ff73; }
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px 4px; background: none; border: none; flex-shrink: 0; }
         .hamburger span { width: 22px; height: 2px; background: #aaa; border-radius: 2px; transition: all 0.25s; display: block; }
         .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #00ff73; }
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #00ff73; }
-
-        /* ── MOBILE NAV DRAWER (hidden on desktop) ── */
         .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #181818; border-bottom: 2px solid #2a2a2a; z-index: 98; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
         .mobile-nav.open { display: flex; }
-        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: bold; padding: 15px 24px; border-bottom: 1px solid #1e1e1e; transition: color 0.15s, background 0.15s; }
+        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: bold; padding: 15px 24px; border-bottom: 1px solid #1e1e1e; display: block; }
         .mobile-nav a.nav-active { color: #00ff73; }
-        .mobile-nav a:active { background: #222; }
-        .mobile-nav .m-submit { background: #00ff73; color: #000; margin: 12px 16px; border-radius: 8px; text-align: center; padding: 13px; border-bottom: none; font-size: 0.95rem; }
-
-        /* ── MOBILE ONLY (phones/tablets under 768px) ── */
+        .mobile-nav .m-submit { background: #00ff73; color: #000; margin: 12px 16px; border-radius: 8px; text-align: center; padding: 13px; border-bottom: none; }
+        @media (max-width: 768px) {
+            .topbar-left .nav-link, .topbar-left .topbar-title-divider, .topbar-left .topbar-title ~ .topbar-title, .nav-btn, .nav-divider { display: none !important; }
+            .hamburger { display: flex !important; }
+            .topbar { padding: 0 14px !important; }
+            .topbar-title { font-size: 0.9rem !important; letter-spacing: 1px !important; }
+        }
+        .page-content { margin-top: 80px; max-width: 720px; margin-left: auto; margin-right: auto; padding: 40px 20px 60px; }
+        h1 { font-size: 1.6rem; margin-bottom: 6px; }
+        .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 32px; }
+        .section-label { font-size: 0.72rem; font-weight: bold; color: #555; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .personal-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+        .personal-tile { background: #0f1f14; border: 1.5px solid #00ff7344; border-radius: 12px; padding: 18px 12px; text-align: center; position: relative; overflow: hidden; }
+        .personal-tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #00ff73, #00cc5a); }
+        .personal-tile .tile-val { font-size: 1.7rem; font-weight: bold; color: #00ff73; }
+        .personal-tile .tile-label { font-size: 0.72rem; color: #88bb99; margin-top: 6px; }
+        .summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 32px; }
+        .summary-tile { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; padding: 20px; text-align: center; }
+        .summary-tile .tile-val { font-size: 2rem; font-weight: bold; color: #00ff73; }
+        .summary-tile .tile-label { font-size: 0.8rem; color: #888; margin-top: 4px; }
+        .card { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
+        .card-header { padding: 14px 20px; border-bottom: 1px solid #2a2a2a; font-size: 0.75rem; font-weight: bold; color: #888; letter-spacing: 1px; text-transform: uppercase; }
+        .stats-table { width: 100%; border-collapse: collapse; }
+        .stats-table th { text-align: left; padding: 10px 14px; font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #2a2a2a; }
+        .stats-table td { padding: 12px 14px; font-size: 0.9rem; border-bottom: 1px solid #1a1a1a; }
+        .stats-table tr:last-child td { border-bottom: none; }
+        .stats-table tr:hover td { background: #222; }
+        .you-row td { background: #0f1f14 !important; color: #00ff73; }
+        .you-badge { font-size: 0.7rem; background: #00ff7322; color: #00ff73; border: 1px solid #00ff7355; border-radius: 4px; padding: 1px 6px; margin-left: 6px; }
+        .medal { font-size: 1rem; }
+        @media (max-width: 768px) {
+            .personal-row { grid-template-columns: repeat(2, 1fr) !important; }
+            .summary-row { grid-template-columns: repeat(2, 1fr) !important; }
+        }
     </style>
 </head>
 <body>
-
     <div class="topbar">
         <div class="topbar-left">
             <a class="topbar-title" href="index.html">⚔ DEMON LIST</a>
@@ -166,7 +121,6 @@
             </div>
         </div>
     </div>
-
     <div class="mobile-nav" id="mobile-nav">
         <a href="index.html">⚔ Demon List</a>
         <a href="bebotian.html">⚔ Bebotian Demon List</a>
@@ -175,73 +129,37 @@
         <a href="about.html">ℹ️ About</a>
         <a href="submit.html" class="m-submit">+ Submit Record</a>
     </div>
-
-        <div class="page-content">
+    <div class="page-content">
         <h1>📊 Stats Viewer</h1>
         <p class="subtitle">Player statistics based on approved records.</p>
-
-        <div class="personal-row">
-                <div class="personal-tile">
-                    <div class="tile-val" id="my-total">—</div>
-                    <div class="tile-label">Records Submitted</div>
-                </div>
-                <div class="personal-tile">
-                    <div class="tile-val" id="my-approved">—</div>
-                    <div class="tile-label">Approved Records</div>
-                </div>
-                <div class="personal-tile">
-                    <div class="tile-val" id="my-player-rank">—</div>
-                    <div class="tile-label">Top Player Place</div>
-                </div>
-                <div class="personal-tile">
-                    <div class="tile-val" id="my-level-rank">—</div>
-                    <div class="tile-label">Top Completed Level Place</div>
-                </div>
+        <div id="personal-section" style="display:none;">
+            <div class="section-label">👤 Your Stats</div>
+            <div class="personal-row">
+                <div class="personal-tile"><div class="tile-val" id="my-total">—</div><div class="tile-label">Records Submitted</div></div>
+                <div class="personal-tile"><div class="tile-val" id="my-approved">—</div><div class="tile-label">Approved Records</div></div>
+                <div class="personal-tile"><div class="tile-val" id="my-player-rank">—</div><div class="tile-label">Top Player Place</div></div>
+                <div class="personal-tile"><div class="tile-val" id="my-level-rank">—</div><div class="tile-label">Top Completed Level Place</div></div>
             </div>
         </div>
-
-        <!-- Global summary -->
         <div class="section-label">🌍 Global Stats</div>
-        <div class="summary-row" style="margin-bottom:32px;">
+        <div class="summary-row">
             <div class="summary-tile"><div class="tile-val" id="total-records">—</div><div class="tile-label">Total Records Submitted</div></div>
             <div class="summary-tile"><div class="tile-val" id="total-approved">—</div><div class="tile-label">Approved Records</div></div>
             <div class="summary-tile"><div class="tile-val" id="total-players">—</div><div class="tile-label">Players on the Board</div></div>
         </div>
-
-        <!-- Top Players -->
         <div class="card">
             <div class="card-header">🏅 Top Players — Most Approved Records</div>
-            <table class="stats-table">
-                <thead><tr><th>#</th><th>Player</th><th>Approved Records</th></tr></thead>
-                <tbody id="top-players-body"><tr><td colspan="3" style="color:#555; padding:20px;">Loading...</td></tr></tbody>
-            </table>
+            <table class="stats-table"><thead><tr><th>#</th><th>Player</th><th>Approved Records</th></tr></thead>
+            <tbody id="top-players-body"><tr><td colspan="3" style="color:#555;padding:20px;">Loading...</td></tr></tbody></table>
         </div>
-
-        <!-- Most Completed Levels -->
         <div class="card">
             <div class="card-header">🎮 Most Completed Levels</div>
-            <table class="stats-table">
-                <thead><tr><th>#</th><th>Level</th><th>Completions</th></tr></thead>
-                <tbody id="top-levels-body"><tr><td colspan="3" style="color:#555; padding:20px;">Loading...</td></tr></tbody>
-            </table>
+            <table class="stats-table"><thead><tr><th>#</th><th>Level</th><th>Completions</th></tr></thead>
+            <tbody id="top-levels-body"><tr><td colspan="3" style="color:#555;padding:20px;">Loading...</td></tr></tbody></table>
         </div>
     </div>
-
-    <!-- Mobile nav drawer -->
-    <div class="mobile-nav" id="mobile-nav">
-        <a href="index.html">⚔ Demon List</a>
-        <a href="bebotian.html">⚔ Bebotian Demon List</a>
-        <a href="stats.html" class="nav-active">📊 Stats</a>
-        <a href="rules.html">📋 Rules</a>
-        <a href="about.html">ℹ️ About</a>
-        <a href="submit.html" class="m-submit">+ Submit Record</a>
-    </div>
-    </div>
     <script>
-        const sb = supabase.createClient(
-            'https://outwfzgqwklazecpmmfl.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
-        );
+        const sb = supabase.createClient('https://outwfzgqwklazecpmmfl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA');
 
         function toggleDropdown() {
             document.getElementById('user-btn').classList.toggle('open');
@@ -267,141 +185,76 @@
         async function logOut() { await sb.auth.signOut(); window.location.href = 'index.html'; }
         async function initAuth() {
             const { data: { user } } = await sb.auth.getUser();
-            if (user) {
-                document.getElementById('auth-links').style.display = 'none';
-                document.getElementById('user-menu-wrapper').style.display = 'block';
-                document.getElementById('dropdown-email').innerText = user.email;
-                const { data: profile } = await sb.from('profiles').select('is_admin, username, avatar_url').eq('id', user.id).maybeSingle();
-                const username = profile?.username || user.user_metadata?.username || user.email.split('@')[0];
-                document.getElementById('user-label').innerText = username;
-                if (profile?.avatar_url) {
-                    document.getElementById('user-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar">`;
-                } else {
-                    document.getElementById('user-avatar-letter').innerText = username[0].toUpperCase();
-                }
-                if (profile?.is_admin) { const al = document.getElementById('admin-link'); if (al) al.style.display = 'flex'; }
-                return { user, profile };
+            if (!user) return null;
+            document.getElementById('auth-links').style.display = 'none';
+            document.getElementById('user-menu-wrapper').style.display = 'block';
+            document.getElementById('dropdown-email').innerText = user.email;
+            const { data: profile } = await sb.from('profiles').select('is_admin, username, avatar_url').eq('id', user.id).maybeSingle();
+            const username = profile?.username || user.user_metadata?.username || user.email.split('@')[0];
+            document.getElementById('user-label').innerText = username;
+            if (profile?.avatar_url) {
+                document.getElementById('user-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar">`;
+            } else {
+                document.getElementById('user-avatar-letter').innerText = username[0].toUpperCase();
             }
-            return { user: null, profile: null };
+            if (profile?.is_admin) { const al = document.getElementById('admin-link'); if (al) al.style.display = 'flex'; }
+            return { user, profile };
         }
-
-        window.location.href = 'index.html'; }
-window.location.href = 'index.html'; }
-
         function medal(i) {
             if (i === 0) return '<span class="medal">🥇</span>';
             if (i === 1) return '<span class="medal">🥈</span>';
             if (i === 2) return '<span class="medal">🥉</span>';
             return `<span style="color:#555">${i + 1}</span>`;
+        }
         function ordinal(n) {
-            if (n === null || n === undefined) return '—';
+            if (!n) return '—';
             const s = ['th','st','nd','rd'], v = n % 100;
-            return n + (s[(v - 20) % 10] || s[v] || s[0]);
-        async function loadStats(currentUserId) {
-            const { data: allRecords, error } = await sb.from('Records').select('*');
-            if (error) { console.error(error); return; }
-
+            return n + (s[(v-20)%10] || s[v] || s[0]);
+        }
+        async function loadStats(uid) {
+            const { data: allRecords } = await sb.from('Records').select('*');
+            if (!allRecords) return;
             const approved = allRecords.filter(r => r.status === 'approved');
-
-            // Global summary
             document.getElementById('total-records').innerText = allRecords.length;
             document.getElementById('total-approved').innerText = approved.length;
-            const uniquePlayers = new Set(approved.map(r => r.user_id));
-            document.getElementById('total-players').innerText = uniquePlayers.size;
-
-            // Build player counts
+            document.getElementById('total-players').innerText = new Set(approved.map(r => r.user_id)).size;
             const playerCounts = {};
-            const playerUserIds = new Set(approved.map(r => r.user_id));
-            approved.forEach(r => {
-                playerCounts[r.user_id] = (playerCounts[r.user_id] || 0) + 1;
-            });
-
-            // Fetch GD names from player_claims (approved) and profiles
-            const { data: claims } = await sb.from('player_claims')
-                .select('user_id, gd_name').eq('status', 'approved');
-            const { data: profiles } = await sb.from('profiles')
-                .select('id, username').in('id', [...playerUserIds]);
-
-            const claimMap = {};
-            (claims || []).forEach(c => { claimMap[c.user_id] = c.gd_name; });
-            const profileMap = {};
-            (profiles || []).forEach(p => { profileMap[p.id] = p.username; });
-
-            const playerNames = {};
-            [...playerUserIds].forEach(uid => {
-                playerNames[uid] = claimMap[uid] || profileMap[uid] || uid.slice(0, 8) + '...';
-            });
-            const sortedPlayers = Object.entries(playerCounts).sort((a, b) => b[1] - a[1]);
-
-            // Build level counts
+            approved.forEach(r => { playerCounts[r.user_id] = (playerCounts[r.user_id] || 0) + 1; });
+            const { data: claims } = await sb.from('player_claims').select('user_id,gd_name').eq('status','approved');
+            const { data: profiles } = await sb.from('profiles').select('id,username');
+            const claimMap = {}; (claims||[]).forEach(c => { claimMap[c.user_id] = c.gd_name; });
+            const profileMap = {}; (profiles||[]).forEach(p => { profileMap[p.id] = p.username; });
+            const sortedPlayers = Object.entries(playerCounts).sort((a,b) => b[1]-a[1]);
             const levelCounts = {};
-            approved.forEach(r => {
-                const name = r.level_name || 'Unknown';
-                levelCounts[name] = (levelCounts[name] || 0) + 1;
-            });
-            const sortedLevels = Object.entries(levelCounts).sort((a, b) => b[1] - a[1]);
-
-            // Personal stats
-            if (currentUserId) {
-                const myAll = allRecords.filter(r => r.user_id === currentUserId);
-                const myApproved = approved.filter(r => r.user_id === currentUserId);
-
+            approved.forEach(r => { const n = r.level_name||'Unknown'; levelCounts[n] = (levelCounts[n]||0)+1; });
+            const sortedLevels = Object.entries(levelCounts).sort((a,b) => b[1]-a[1]);
+            if (uid) {
+                const myAll = allRecords.filter(r => r.user_id === uid);
+                const myApproved = approved.filter(r => r.user_id === uid);
                 document.getElementById('my-total').innerText = myAll.length;
                 document.getElementById('my-approved').innerText = myApproved.length;
-
-                // Player rank (position in sorted leaderboard)
-                const playerRankIdx = sortedPlayers.findIndex(([uid]) => uid === currentUserId);
-                document.getElementById('my-player-rank').innerText =
-                    playerRankIdx >= 0 ? ordinal(playerRankIdx + 1) : '—';
-
-                // Top completed level rank — find the best-ranked level this user has completed
-                const myLevelNames = new Set(myApproved.map(r => r.level_name));
-                let bestLevelRank = null;
-                sortedLevels.forEach(([name], idx) => {
-                    if (myLevelNames.has(name) && bestLevelRank === null) bestLevelRank = idx + 1;
-                });
-                document.getElementById('my-level-rank').innerText =
-                    bestLevelRank !== null ? ordinal(bestLevelRank) : '—';
-
+                const pr = sortedPlayers.findIndex(([id]) => id === uid);
+                document.getElementById('my-player-rank').innerText = pr >= 0 ? ordinal(pr+1) : '—';
+                const myLevels = new Set(myApproved.map(r => r.level_name));
+                let bl = null; sortedLevels.forEach(([n],i) => { if (myLevels.has(n) && !bl) bl = i+1; });
+                document.getElementById('my-level-rank').innerText = bl ? ordinal(bl) : '—';
                 document.getElementById('personal-section').style.display = 'block';
-                // Render top players table (top 10, highlight current user)
-            const playersBody = document.getElementById('top-players-body');
-            const top10Players = sortedPlayers.slice(0, 10);
-            if (top10Players.length === 0) {
-                playersBody.innerHTML = '<tr><td colspan="3" style="color:#555; padding:20px;">No approved records yet.</td></tr>';
-            } else {
-                playersBody.innerHTML = top10Players.map(([uid, count], i) => {
-                    const isYou = uid === currentUserId;
-                    return `<tr class="${isYou ? 'you-row' : ''}">
-                        <td class="rank-num">${medal(i)}</td>
-                        <td>${playerNames[uid]}${isYou ? '<span class="you-badge">YOU</span>' : ''}</td>
-                        <td style="font-weight:bold;">${count}</td>
-                    </tr>`;
-                }).join('');
-                // Render most completed levels table (top 10)
-            const levelsBody = document.getElementById('top-levels-body');
-            const top10Levels = sortedLevels.slice(0, 10);
-            if (top10Levels.length === 0) {
-                levelsBody.innerHTML = '<tr><td colspan="3" style="color:#555; padding:20px;">No approved records yet.</td></tr>';
-            } else {
-                levelsBody.innerHTML = top10Levels.map(([name, count], i) => `
-                    <tr>
-                        <td class="rank-num">${medal(i)}</td>
-                        <td>${name}</td>
-                        <td style="color:#00ff73; font-weight:bold;">${count}</td>
-                    </tr>`).join('');
             }
+            const pb = document.getElementById('top-players-body');
+            pb.innerHTML = sortedPlayers.slice(0,10).map(([uid2,cnt],i) => {
+                const name = claimMap[uid2] || profileMap[uid2] || uid2.slice(0,8)+'...';
+                const isYou = uid2 === uid;
+                return `<tr class="${isYou?'you-row':''}"><td>${medal(i)}</td><td>${name}${isYou?'<span class="you-badge">YOU</span>':''}</td><td style="font-weight:bold;color:#00ff73">${cnt}</td></tr>`;
+            }).join('') || '<tr><td colspan="3" style="color:#555;padding:20px">No approved records yet.</td></tr>';
+            const lb = document.getElementById('top-levels-body');
+            lb.innerHTML = sortedLevels.slice(0,10).map(([name,cnt],i) =>
+                `<tr><td>${medal(i)}</td><td>${name}</td><td style="font-weight:bold;color:#00ff73">${cnt}</td></tr>`
+            ).join('') || '<tr><td colspan="3" style="color:#555;padding:20px">No approved records yet.</td></tr>';
+        }
         (async () => {
-            const { user } = await initAuth();" alt="avatar">`;
-            }
-                document.getElementById('dropdown-email').innerText = user.email;
-            }
-            loadStats(uid);
+            const auth = await initAuth();
+            loadStats(auth?.user?.id || null);
         })();
-    
-        // ── Mobile nav toggle ──
-
-        initAuth();
     </script>
 </body>
 </html>
