@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Demon List</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { background-color: #121212; color: white; font-family: sans-serif; margin: 0; min-height: 100vh; }
+        .topbar { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #181818; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; }
+        .topbar-left { display: flex; align-items: center; gap: 24px; }
+        .topbar-title { color: #00ff73; font-weight: bold; font-size: 1.1rem; letter-spacing: 2px; text-decoration: none; }
+        .topbar-title-divider { width: 1px; height: 20px; background: #333; flex-shrink: 0; }
+        .topbar-right { display: flex; align-items: center; gap: 8px; }
+        .nav-link { color: #aaa; text-decoration: none; font-size: 0.85rem; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: color 0.2s, background 0.2s; }
+        .nav-link:hover { color: white; background: #2a2a2a; }
+        .nav-btn { background: #00ff73; color: #000; text-decoration: none; font-size: 0.85rem; font-weight: bold; padding: 7px 14px; border-radius: 6px; transition: opacity 0.2s; }
+        .nav-btn:hover { opacity: 0.85; }
+        .nav-divider { width: 1px; height: 20px; background: #2a2a2a; margin: 0 4px; }
+        #auth-links { display: flex; align-items: center; gap: 8px; }
+        #auth-links a { color: #00ff73; text-decoration: none; font-weight: bold; font-size: 0.85rem; padding: 6px 12px; border: 1.5px solid #00ff73; border-radius: 6px; transition: background 0.2s, color 0.2s; }
+        #auth-links a:hover { background: #00ff73; color: #000; }
+        #user-menu-wrapper { position: relative; display: none; }
+        #user-btn { background: #1e1e1e; border: 1.5px solid #333; color: white; padding: 7px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: border-color 0.2s; }
+        #user-btn:hover { border-color: #00ff73; }
+        .avatar { width: 26px; height: 26px; border-radius: 50%; background: #00ff73; color: #000; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; flex-shrink: 0; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .chevron { font-size: 0.65rem; color: #888; transition: transform 0.2s; }
+        #user-btn.open .chevron { transform: rotate(180deg); }
+        #user-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: #1e1e1e; border: 1.5px solid #333; border-radius: 10px; min-width: 190px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        #user-dropdown.open { display: block; animation: dropIn 0.15s ease; }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-header { padding: 12px 16px; border-bottom: 1px solid #2a2a2a; font-size: 0.75rem; color: #888; }
+        .dropdown-header span { display: block; color: white; font-weight: bold; font-size: 0.9rem; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; font-size: 0.88rem; color: #ccc; transition: background 0.15s, color 0.15s; text-decoration: none; }
+        .dropdown-item:hover { background: #2a2a2a; color: white; }
+        .dropdown-item .icon { font-size: 1rem; width: 18px; text-align: center; }
+        .dropdown-divider { height: 1px; background: #2a2a2a; }
+        .dropdown-item.danger { color: #ff5555; }
+        .dropdown-item.danger:hover { background: #2a1a1a; color: #ff6666; }
+        .dropdown-item.active { color: #00ff73; }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px 4px; background: none; border: none; flex-shrink: 0; }
+        .hamburger span { width: 22px; height: 2px; background: #aaa; border-radius: 2px; transition: all 0.25s; display: block; }
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #00ff73; }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #00ff73; }
+        .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #181818; border-bottom: 2px solid #2a2a2a; z-index: 98; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .mobile-nav.open { display: flex; }
+        .mobile-nav a { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: bold; padding: 15px 24px; border-bottom: 1px solid #1e1e1e; display: block; }
+        .mobile-nav a.nav-active { color: #00ff73; }
+        .mobile-nav .m-submit { background: #00ff73; color: #000; margin: 12px 16px; border-radius: 8px; text-align: center; padding: 13px; border-bottom: none; }
+        @media (max-width: 768px) {
+            .topbar-left .nav-link, .topbar-left .topbar-title-divider, .topbar-left .topbar-title ~ .topbar-title, .nav-btn, .nav-divider { display: none !important; }
+            .hamburger { display: flex !important; }
+            .topbar { padding: 0 14px !important; }
+            .topbar-title { font-size: 0.9rem !important; }
+        }
+
+        /* PAGE */
+        .page-content { margin-top: 80px; max-width: 860px; margin-left: auto; margin-right: auto; padding: 40px 20px 60px; }
+        h1 { font-size: 1.6rem; margin-bottom: 6px; }
+        .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 28px; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 2px; margin-bottom: 24px; border-bottom: 1px solid #2a2a2a; overflow-x: auto; }
+        .tab { padding: 10px 16px; font-size: 0.82rem; font-weight: bold; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+        .tab:hover { color: #ccc; }
+        .tab.active { color: #00ff73; border-bottom-color: #00ff73; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .count-badge { background: #2a2a2a; color: #888; border-radius: 99px; padding: 1px 7px; font-size: 0.7rem; margin-left: 4px; }
+        .count-badge.red { background: #2a1000; color: #ff6633; }
+        .count-badge.green { background: #001a0a; color: #00ff73; }
+
+        /* BUTTONS */
+        .btn-approve { background: #00ff73; color: #000; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: opacity 0.2s; }
+        .btn-approve:hover { opacity: 0.85; }
+        .btn-reject { background: transparent; color: #ff5555; border: 1.5px solid #ff5555; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .btn-reject:hover { background: #2a1a1a; }
+        .btn-undo { background: transparent; color: #888; border: 1.5px solid #333; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .btn-undo:hover { border-color: #888; color: white; }
+        .btn-edit { background: transparent; color: #4488ff; border: 1.5px solid #4488ff; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .btn-edit:hover { background: #0a1a33; }
+        .btn-delete { background: transparent; color: #ff3333; border: 1.5px solid #ff3333; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .btn-delete:hover { background: #2a0a0a; }
+        .btn-save { background: #00ff73; color: #000; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .btn-save:hover { opacity: 0.85; }
+        .btn-cancel { background: transparent; color: #888; border: 1.5px solid #333; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .btn-cancel:hover { color: white; border-color: #888; }
+
+        /* RECORD CARDS */
+        .record-card { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; transition: border-color 0.2s; }
+        .record-card:hover { border-color: #333; }
+        .record-card.editing { border-color: #4488ff44; background: #0a1020; }
+        .record-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+        .record-info { flex: 1; }
+        .record-level { font-size: 1rem; font-weight: bold; color: white; margin-bottom: 3px; }
+        .record-player { font-size: 0.85rem; color: #aaa; margin-bottom: 3px; }
+        .record-meta { font-size: 0.76rem; color: #555; }
+        .record-meta a { color: #00ff73; text-decoration: none; }
+        .record-meta a:hover { text-decoration: underline; }
+        .record-actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .dot-pending  { background: #ffcc00; }
+        .dot-approved { background: #00ff73; }
+        .dot-rejected { background: #ff5555; }
+
+        /* EDIT FORM inside card */
+        .edit-form { margin-top: 14px; padding-top: 14px; border-top: 1px solid #2a2a2a; display: flex; flex-direction: column; gap: 10px; }
+        .edit-row { display: flex; flex-direction: column; gap: 4px; }
+        .edit-row label { font-size: 0.75rem; color: #666; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+        .edit-row input { background: #111; border: 1.5px solid #333; color: white; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+        .edit-row input:focus { border-color: #4488ff; }
+        .edit-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+        /* CLAIMS */
+        .claim-card { background: #1e1e1e; border: 1.5px solid #2a2a2a; border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+        .claim-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+        .claim-gd-name { font-size: 1.05rem; font-weight: bold; color: white; }
+        .claim-meta { font-size: 0.78rem; color: #666; margin-top: 3px; }
+        .claim-video { display: inline-flex; align-items: center; gap: 6px; color: #00ff73; font-size: 0.82rem; text-decoration: none; margin-top: 8px; }
+        .claim-video:hover { text-decoration: underline; }
+        .claim-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+        .empty { text-align: center; padding: 48px 20px; color: #555; font-size: 0.9rem; }
+        .access-denied { text-align: center; margin-top: 120px; color: #888; }
+        .access-denied a { color: #00ff73; text-decoration: none; }
+
+        /* CONFIRM DELETE OVERLAY */
+        .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; }
+        .confirm-overlay.open { display: flex; }
+        .confirm-box { background: #1e1e1e; border: 1.5px solid #ff3333; border-radius: 12px; padding: 28px; max-width: 380px; width: 90%; text-align: center; }
+        .confirm-box h3 { font-size: 1.1rem; margin-bottom: 10px; color: #ff5555; }
+        .confirm-box p { font-size: 0.88rem; color: #aaa; margin-bottom: 24px; }
+        .confirm-box .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+
+        @media (max-width: 768px) {
+            .record-top { flex-direction: column; }
+            .record-actions { width: 100%; }
+            .claim-top { flex-direction: column; }
+            .claim-actions { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <a class="topbar-title" href="index.html">⚔ DEMON LIST</a>
+            <div class="topbar-title-divider"></div>
+            <a class="topbar-title" href="bebotian.html">⚔ BEBOTIAN DEMON LIST</a>
+            <a class="nav-link" href="stats.html">📊 Stats</a>
+            <a class="nav-link" href="rules.html">📋 Rules</a>
+            <a class="nav-link" href="about.html">ℹ️ About</a>
+        </div>
+        <div class="topbar-right">
+            <a class="nav-btn" href="submit.html">+ Submit Record</a>
+            <div class="nav-divider"></div>
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileNav()"><span></span><span></span><span></span></button>
+            <div id="auth-links">
+                <a href="signup.html">Sign Up</a>
+                <a href="login.html">Login</a>
+            </div>
+            <div id="user-menu-wrapper">
+                <button id="user-btn" onclick="toggleDropdown()">
+                    <div class="avatar" id="user-avatar"><span id="user-avatar-letter">?</span></div>
+                    <span id="user-label">Loading...</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div id="user-dropdown">
+                    <div class="dropdown-header">Signed in as<span id="dropdown-email"></span></div>
+                    <a class="dropdown-item" href="my-records.html"><span class="icon">🏆</span> My Records</a>
+                    <a class="dropdown-item" href="settings.html"><span class="icon">⚙️</span> User Settings</a>
+                    <a class="dropdown-item active" href="admin.html"><span class="icon">🛡️</span> Admin Panel</a>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item danger" onclick="logOut()"><span class="icon">🚪</span> Log Out</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="index.html">⚔ Demon List</a>
+        <a href="bebotian.html">⚔ Bebotian Demon List</a>
+        <a href="stats.html">📊 Stats</a>
+        <a href="rules.html">📋 Rules</a>
+        <a href="about.html">ℹ️ About</a>
+        <a href="submit.html" class="m-submit">+ Submit Record</a>
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <div class="confirm-overlay" id="confirm-overlay">
+        <div class="confirm-box">
+            <h3>🗑️ Delete Record?</h3>
+            <p>This will permanently delete this record. This cannot be undone.</p>
+            <div class="confirm-btns">
+                <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+                <button class="btn-delete" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="access-denied" style="display:none;" class="access-denied">
+        <p style="font-size:1.5rem;margin-bottom:12px">🔒</p>
+        <p>You don't have permission to view this page.</p><br>
+        <a href="index.html">← Back to List</a>
+    </div>
+
+    <div class="page-content" id="admin-content" style="display:none;">
+        <h1>🛡️ Admin Panel</h1>
+        <p class="subtitle">Manage records, player claims and site content.</p>
+
+        <div class="tabs">
+            <div class="tab active"  onclick="switchTab('pending')">⏳ Pending <span class="count-badge red" id="count-pending">0</span></div>
+            <div class="tab"         onclick="switchTab('approved')">✅ Approved <span class="count-badge green" id="count-approved">0</span></div>
+            <div class="tab"         onclick="switchTab('rejected')">✗ Rejected <span class="count-badge" id="count-rejected">0</span></div>
+            <div class="tab"         onclick="switchTab('claims')">🎮 Claims <span class="count-badge red" id="count-claims">0</span></div>
+            <div class="tab"         onclick="switchTab('claims-done')">✅ Claims Done <span class="count-badge" id="count-claims-done">0</span></div>
+        </div>
+
+        <div id="tab-pending"      class="tab-panel active"><div id="list-pending"><div class="empty">Loading...</div></div></div>
+        <div id="tab-approved"     class="tab-panel"><div id="list-approved"><div class="empty">Loading...</div></div></div>
+        <div id="tab-rejected"     class="tab-panel"><div id="list-rejected"><div class="empty">Loading...</div></div></div>
+        <div id="tab-claims"       class="tab-panel"><div id="list-claims"><div class="empty">Loading...</div></div></div>
+        <div id="tab-claims-done"  class="tab-panel"><div id="list-claims-done"><div class="empty">Loading...</div></div></div>
+    </div>
+
+    <script>
+        const sb = supabase.createClient(
+            'https://outwfzgqwklazecpmmfl.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91dHdmemdxd2tsYXplY3BtbWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTc2NjMsImV4cCI6MjA4OTA5MzY2M30.HYk1XXikmm3Dx0tWk0rACS_fSe5dQRf0KY_PuMzdiDA'
+        );
+
+        function toggleDropdown() {
+            document.getElementById('user-btn').classList.toggle('open');
+            document.getElementById('user-dropdown').classList.toggle('open');
+        }
+        function toggleMobileNav() {
+            document.getElementById('mobile-nav').classList.toggle('open');
+            document.getElementById('hamburger-btn').classList.toggle('open');
+        }
+        document.addEventListener('click', (e) => {
+            const w = document.getElementById('user-menu-wrapper');
+            if (w && !w.contains(e.target)) {
+                document.getElementById('user-btn').classList.remove('open');
+                document.getElementById('user-dropdown').classList.remove('open');
+            }
+            const nav = document.getElementById('mobile-nav');
+            const btn = document.getElementById('hamburger-btn');
+            if (nav && btn && nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+                nav.classList.remove('open');
+                btn.classList.remove('open');
+            }
+        });
+        async function logOut() { await sb.auth.signOut(); window.location.href = 'index.html'; }
+        async function initAuth() {
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) return null;
+            document.getElementById('auth-links').style.display = 'none';
+            document.getElementById('user-menu-wrapper').style.display = 'block';
+            document.getElementById('dropdown-email').innerText = user.email;
+            const { data: profile } = await sb.from('profiles').select('is_admin, username, avatar_url').eq('id', user.id).maybeSingle();
+            const username = profile?.username || user.user_metadata?.username || user.email.split('@')[0];
+            document.getElementById('user-label').innerText = username;
+            if (profile?.avatar_url) {
+                document.getElementById('user-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar">`;
+            } else {
+                document.getElementById('user-avatar-letter').innerText = username[0].toUpperCase();
+            }
+            return { user, profile };
+        }
+
+        // ── STATE ──
+        let allRecords = [];
+        let allClaims  = [];
+        let currentTab = 'pending';
+        let pendingDeleteId = null;
+
+        // ── TABS ──
+        function switchTab(tab) {
+            currentTab = tab;
+            const tabs = ['pending','approved','rejected','claims','claims-done'];
+            document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabs[i] === tab));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        function fmtDate(iso) {
+            if (!iso) return '';
+            return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        // ── DELETE CONFIRM ──
+        function openConfirm(id) {
+            pendingDeleteId = id;
+            document.getElementById('confirm-overlay').classList.add('open');
+        }
+        function closeConfirm() {
+            pendingDeleteId = null;
+            document.getElementById('confirm-overlay').classList.remove('open');
+        }
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            if (!pendingDeleteId) return;
+            const { error } = await sb.from('Records').delete().eq('id', pendingDeleteId);
+            closeConfirm();
+            if (error) { alert('Delete failed: ' + error.message); return; }
+            await loadRecords();
+        });
+
+        // ── EDIT TOGGLE ──
+        function toggleEdit(id) {
+            const card = document.getElementById('record-card-' + id);
+            const form = document.getElementById('edit-form-' + id);
+            if (!card || !form) return;
+            const isEditing = card.classList.contains('editing');
+            card.classList.toggle('editing', !isEditing);
+            form.style.display = isEditing ? 'none' : 'flex';
+        }
+
+        // ── SAVE EDIT ──
+        async function saveEdit(id) {
+            const levelName  = document.getElementById('edit-level-'  + id).value.trim();
+            const videoUrl   = document.getElementById('edit-video-'  + id).value.trim();
+            const playerName = document.getElementById('edit-player-' + id).value.trim();
+            if (!levelName) { alert('Level name cannot be empty.'); return; }
+            const updates = { level_name: levelName, video_url: videoUrl };
+            if (playerName) updates.player_name = playerName;
+            const { error } = await sb.from('Records').update(updates).eq('id', id);
+            if (error) { alert('Save failed: ' + error.message); return; }
+            await loadRecords();
+        }
+
+        // ── UPDATE STATUS ──
+        async function updateRecord(id, status) {
+            const { error } = await sb.from('Records').update({ status }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            await loadRecords();
+        }
+
+        // ── RENDER RECORDS ──
+        function recordCard(r, showApprove = false) {
+            const dot = `<span class="status-dot dot-${r.status}"></span>`;
+            return `
+            <div class="record-card" id="record-card-${r.id}">
+                <div class="record-top">
+                    <div class="record-info">
+                        <div class="record-level">${dot}${r.level_name || 'Unknown Level'}</div>
+                        <div class="record-player">👤 ${r.player_name || r.user_id?.slice(0,14)+'...'}</div>
+                        <div class="record-meta">
+                            Submitted ${fmtDate(r.created_at)}
+                            ${r.video_url ? `· <a href="${r.video_url}" target="_blank">▶ Watch Video</a>` : ''}
+                            ${r.raw_footage_path ? '· 📹 Raw footage' : ''}
+                        </div>
+                    </div>
+                    <div class="record-actions">
+                        ${showApprove
+                            ? `<button class="btn-approve" onclick="updateRecord(${r.id},'approved')">✓ Approve</button>
+                               <button class="btn-reject"  onclick="updateRecord(${r.id},'rejected')">✗ Reject</button>`
+                            : `<button class="btn-undo"    onclick="updateRecord(${r.id},'pending')">↩ Pending</button>`}
+                        <button class="btn-edit"   onclick="toggleEdit(${r.id})">✏️ Edit</button>
+                        <button class="btn-delete" onclick="openConfirm(${r.id})">🗑️ Delete</button>
+                    </div>
+                </div>
+                <div class="edit-form" id="edit-form-${r.id}" style="display:none;">
+                    <div class="edit-row">
+                        <label>Level Name</label>
+                        <input id="edit-level-${r.id}"  value="${(r.level_name||'').replace(/"/g,'&quot;')}" placeholder="Level name">
+                    </div>
+                    <div class="edit-row">
+                        <label>Player Name (override)</label>
+                        <input id="edit-player-${r.id}" value="${(r.player_name||'').replace(/"/g,'&quot;')}" placeholder="Leave blank to use account name">
+                    </div>
+                    <div class="edit-row">
+                        <label>Video URL</label>
+                        <input id="edit-video-${r.id}"  value="${(r.video_url||'').replace(/"/g,'&quot;')}" placeholder="YouTube URL">
+                    </div>
+                    <div class="edit-actions">
+                        <button class="btn-save"   onclick="saveEdit(${r.id})">💾 Save</button>
+                        <button class="btn-cancel" onclick="toggleEdit(${r.id})">Cancel</button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderRecords() {
+            const pending  = allRecords.filter(r => r.status === 'pending');
+            const approved = allRecords.filter(r => r.status === 'approved');
+            const rejected = allRecords.filter(r => r.status === 'rejected');
+
+            document.getElementById('count-pending').innerText  = pending.length;
+            document.getElementById('count-approved').innerText = approved.length;
+            document.getElementById('count-rejected').innerText = rejected.length;
+
+            const render = (list, containerId, showApprove) => {
+                const el = document.getElementById(containerId);
+                el.innerHTML = list.length
+                    ? list.map(r => recordCard(r, showApprove)).join('')
+                    : '<div class="empty">No records here.</div>';
+            };
+
+            render(pending,  'list-pending',  true);
+            render(approved, 'list-approved', false);
+            render(rejected, 'list-rejected', true);
+        }
+
+        async function loadRecords() {
+            const { data } = await sb.from('Records').select('*').order('created_at', { ascending: false });
+            allRecords = data || [];
+            renderRecords();
+        }
+
+        // ── CLAIMS ──
+        function claimCard(c, isPending) {
+            return `
+            <div class="claim-card">
+                <div class="claim-top">
+                    <div>
+                        <div class="claim-gd-name">⚔ ${c.gd_name}</div>
+                        <div class="claim-meta">User: ${c.user_id.slice(0,14)}... · ${fmtDate(c.created_at)}</div>
+                        <a class="claim-video" href="${c.proof_video}" target="_blank">▶ View Proof Video</a>
+                    </div>
+                    <div class="claim-actions">
+                        ${isPending
+                            ? `<button class="btn-approve" onclick="updateClaim(${c.id},'approved')">✓ Approve</button>
+                               <button class="btn-reject"  onclick="updateClaim(${c.id},'rejected')">✗ Reject</button>`
+                            : `<button class="btn-undo"    onclick="updateClaim(${c.id},'pending')">↩ Reset</button>`}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderClaims() {
+            const pending = allClaims.filter(c => c.status === 'pending');
+            const done    = allClaims.filter(c => c.status !== 'pending');
+            document.getElementById('count-claims').innerText      = pending.length;
+            document.getElementById('count-claims-done').innerText = done.length;
+            document.getElementById('list-claims').innerHTML      = pending.length ? pending.map(c => claimCard(c, true)).join('')  : '<div class="empty">No pending claims.</div>';
+            document.getElementById('list-claims-done').innerHTML = done.length    ? done.map(c => claimCard(c, false)).join('')    : '<div class="empty">No completed claims.</div>';
+        }
+
+        async function updateClaim(id, status) {
+            const { error } = await sb.from('player_claims').update({ status }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            if (status === 'approved') {
+                const claim = allClaims.find(c => c.id === id);
+                if (claim) await sb.from('profiles').update({ username: claim.gd_name }).eq('id', claim.user_id);
+            }
+            await loadClaims();
+        }
+
+        async function loadClaims() {
+            const { data } = await sb.from('player_claims').select('*').order('created_at', { ascending: false });
+            allClaims = data || [];
+            renderClaims();
+        }
+
+        // ── INIT ──
+        (async () => {
+            const auth = await initAuth();
+            if (!auth || !auth.profile?.is_admin) {
+                document.getElementById('access-denied').style.display = 'block';
+                return;
+            }
+            document.getElementById('admin-content').style.display = 'block';
+            loadRecords();
+            loadClaims();
+        })();
+    </script>
+</body>
+</html>
